@@ -1,0 +1,3916 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>政務通 ProMatch - 智慧行政申辦與專家履約媒合商業平台</title>
+  <meta name="description" content="水土保持簡易申報規模快篩、書表預覽與專家媒合／履約託管流程之示範原型。非政府機關網站。">
+  <style>
+/* ==========================================================================
+   政務通 ProMatch - 智慧行政申辦與專家履約媒合商業平台
+   Design System & Modern Styling (含法定公文標準列印樣式)
+   ========================================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;600;700;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+
+:root {
+  /* Dynamic Theme Variables (Default: Soil Care Green) */
+  --primary: #0F5132;
+  --primary-light: #198754;
+  --primary-dark: #0A3622;
+  --primary-subtle: #D1E7DD;
+  --primary-glow: rgba(15, 81, 50, 0.15);
+
+  --accent-emerald: #10B981;
+  --accent-amber: #D97706;
+  --accent-amber-light: #FEF3C7;
+  --accent-blue: #2563EB;
+  --accent-blue-light: #EFF6FF;
+  --accent-purple: #7C3AED;
+
+  --surface-bg: #F8FAFC;
+  --surface-card: #FFFFFF;
+  --surface-subtle: #F1F5F9;
+  --surface-border: #E2E8F0;
+  --surface-border-strong: #CBD5E1;
+
+  --text-main: #0F172A;
+  --text-muted: #475569;
+  --text-subtle: #94A3B8;
+  --text-inverse: #FFFFFF;
+
+  --status-success: #059669;
+  --status-warning: #D97706;
+  --status-danger: #DC2626;
+  --status-info: #0284C7;
+
+  /* Elevation & Radius */
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.07), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -4px rgba(0, 0, 0, 0.04);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+  --radius-full: 9999px;
+
+  --font-base: 'Noto Sans TC', 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-official: "標楷體", "DFKai-SB", "BiauKai", "Noto Serif TC", serif;
+  --transition-fast: 0.15s ease;
+  --transition-normal: 0.25s ease;
+  --transition-smooth: 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Domain specific theme accent overrides */
+[data-domain="building_permit"] {
+  --primary: #854D0E;
+  --primary-light: #B45309;
+  --primary-dark: #713F12;
+  --primary-subtle: #FEF3C7;
+  --primary-glow: rgba(180, 83, 9, 0.18);
+}
+
+[data-domain="sewage_connection"] {
+  --primary: #0369A1;
+  --primary-light: #0284C7;
+  --primary-dark: #075985;
+  --primary-subtle: #E0F2FE;
+  --primary-glow: rgba(2, 132, 199, 0.18);
+}
+
+/* Dark mode */
+[data-theme="dark"] {
+  --surface-bg: #0B1120;
+  --surface-card: #1E293B;
+  --surface-subtle: #0F172A;
+  --surface-border: #334155;
+  --surface-border-strong: #475569;
+  --text-main: #F8FAFC;
+  --text-muted: #94A3B8;
+  --text-subtle: #64748B;
+  --primary-subtle: rgba(16, 185, 129, 0.15);
+}
+
+/* Resets */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-base);
+  background-color: var(--surface-bg);
+  color: var(--text-main);
+  line-height: 1.6;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+
+.container {
+  width: 100%;
+  max-width: 1260px;
+  margin: 0 auto;
+  padding: 0 1.25rem;
+}
+
+/* ==================== Commercial Domain Selector Banner ==================== */
+.domain-switcher-bar {
+  background: #0F172A;
+  color: white;
+  padding: 0.6rem 0;
+  font-size: 0.84rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.domain-switcher-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.domain-tabs {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.domain-tab-btn {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #CBD5E1;
+  padding: 0.35rem 0.85rem;
+  border-radius: var(--radius-full);
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.domain-tab-btn:hover {
+  background: rgba(255, 255, 255, 0.16);
+  color: white;
+}
+
+.domain-tab-btn.active {
+  background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+  border-color: #34D399;
+  color: white;
+  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.35);
+}
+
+[data-domain="building_permit"] .domain-tab-btn.active {
+  background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%);
+  border-color: #FCD34D;
+}
+
+[data-domain="sewage_connection"] .domain-tab-btn.active {
+  background: linear-gradient(135deg, #0284C7 0%, #0369A1 100%);
+  border-color: #38BDF8;
+}
+
+.commercial-badge-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.78rem;
+  color: #94A3B8;
+}
+
+/* ==================== Navigation Bar ==================== */
+.header-nav {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  background: rgba(255, 255, 255, 0.94);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--surface-border);
+  transition: all var(--transition-normal);
+}
+
+[data-theme="dark"] .header-nav {
+  background: rgba(15, 23, 42, 0.94);
+}
+
+.nav-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 4.5rem;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  text-decoration: none;
+  color: var(--text-main);
+  font-weight: 800;
+  font-size: 1.25rem;
+}
+
+.brand-icon {
+  width: 2.6rem;
+  height: 2.6rem;
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  box-shadow: 0 4px 10px var(--primary-glow);
+  font-size: 1.25rem;
+}
+
+.brand-text small {
+  display: block;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--primary-light);
+  letter-spacing: 0.5px;
+}
+
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  list-style: none;
+}
+
+.nav-item {
+  padding: 0.5rem 0.85rem;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  border: 1px solid transparent;
+  text-decoration: none;
+}
+
+.nav-item:hover {
+  color: var(--primary);
+  background: var(--surface-subtle);
+}
+
+.nav-item.active {
+  color: var(--primary);
+  background: var(--primary-subtle);
+  border-color: rgba(16, 185, 129, 0.3);
+}
+
+/* Buttons */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  font-family: inherit;
+  font-weight: 600;
+  font-size: 0.92rem;
+  padding: 0.6rem 1.25rem;
+  border-radius: var(--radius-md);
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+  color: white;
+  box-shadow: 0 2px 8px var(--primary-glow);
+}
+
+.btn-primary:hover {
+  filter: brightness(1.08);
+  transform: translateY(-1px);
+}
+
+.btn-secondary {
+  background: var(--surface-card);
+  color: var(--text-main);
+  border-color: var(--surface-border-strong);
+}
+
+.btn-secondary:hover {
+  background: var(--surface-subtle);
+  border-color: var(--text-muted);
+}
+
+.btn-accent {
+  background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%);
+  color: white;
+  box-shadow: 0 2px 8px rgba(217, 119, 6, 0.25);
+}
+
+.btn-accent:hover {
+  background: linear-gradient(135deg, #D97706 0%, #B45309 100%);
+  transform: translateY(-1px);
+}
+
+.btn-sm {
+  padding: 0.35rem 0.75rem;
+  font-size: 0.82rem;
+  border-radius: var(--radius-sm);
+}
+
+.btn-lg {
+  padding: 0.8rem 1.6rem;
+  font-size: 1.05rem;
+  border-radius: var(--radius-lg);
+}
+
+/* ==================== Hero Banner ==================== */
+.hero-section {
+  position: relative;
+  background: linear-gradient(135deg, #0A2F1D 0%, #0F5132 50%, #0F172A 100%);
+  color: white;
+  padding: 2.75rem 0 3.25rem;
+  overflow: hidden;
+  transition: background 0.5s ease;
+}
+
+[data-domain="building_permit"] .hero-section {
+  background: linear-gradient(135deg, #451A03 0%, #78350F 50%, #0F172A 100%);
+}
+
+[data-domain="sewage_connection"] .hero-section {
+  background: linear-gradient(135deg, #082F49 0%, #0369A1 50%, #0F172A 100%);
+}
+
+.hero-inner {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1.3fr 0.9fr;
+  gap: 2.5rem;
+  align-items: center;
+}
+
+.hero-content h1 {
+  font-size: 2.25rem;
+  font-weight: 800;
+  line-height: 1.25;
+  margin-bottom: 0.85rem;
+  letter-spacing: -0.5px;
+}
+
+.hero-highlight {
+  background: linear-gradient(120deg, #A7F3D0, #FDE68A);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.hero-subtitle {
+  font-size: 0.98rem;
+  color: #E2E8F0;
+  margin-bottom: 1.5rem;
+  line-height: 1.65;
+}
+
+.hero-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin-bottom: 1.8rem;
+}
+
+.hero-badge-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 0.35rem 0.8rem;
+  border-radius: var(--radius-full);
+  font-size: 0.82rem;
+  color: #F1F5F9;
+  backdrop-filter: blur(8px);
+}
+
+.hero-stats-card {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: var(--radius-xl);
+  padding: 1.5rem;
+  backdrop-filter: blur(16px);
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.25);
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.stat-box {
+  padding: 0.85rem;
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: var(--radius-md);
+  border-left: 3px solid var(--accent-emerald);
+}
+
+.stat-number {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #A7F3D0;
+  display: flex;
+  align-items: baseline;
+  gap: 0.25rem;
+}
+
+.stat-label {
+  font-size: 0.78rem;
+  color: #CBD5E1;
+  margin-top: 0.2rem;
+}
+
+/* ==================== Commercial Commission & Ledger Card ==================== */
+.commission-ledger-box {
+  background: #F0FDF4;
+  border: 1.5px solid #86EFAC;
+  border-radius: var(--radius-lg);
+  padding: 1.25rem 1.5rem;
+  margin: 1.25rem 0;
+}
+
+.commission-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.4rem 0;
+  font-size: 0.88rem;
+  border-bottom: 1px dashed rgba(0, 0, 0, 0.08);
+}
+
+.commission-row:last-child {
+  border-bottom: none;
+  padding-top: 0.6rem;
+  font-weight: 800;
+  font-size: 1rem;
+}
+
+.commission-fee-tag {
+  background: #FEF3C7;
+  color: #B45309;
+  border: 1px solid #FCD34D;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 0.15rem 0.5rem;
+  border-radius: var(--radius-full);
+}
+
+/* Platform Revenue Operator Widget */
+.operator-dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.operator-stat-card {
+  background: var(--surface-card);
+  border: 1px solid var(--surface-border);
+  border-radius: var(--radius-lg);
+  padding: 1.25rem;
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+}
+
+.operator-stat-card .val {
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: var(--primary);
+  margin: 0.35rem 0 0.15rem;
+}
+
+.operator-stat-card .lbl {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+}
+
+/* ==================== Stepper & Form Styles ==================== */
+.stepper-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 2.25rem;
+  position: relative;
+}
+
+.stepper-header::before {
+  content: '';
+  position: absolute;
+  top: 1.35rem;
+  left: 2rem;
+  right: 2rem;
+  height: 3px;
+  background: var(--surface-border);
+  z-index: 1;
+}
+
+.step-item {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+  background: var(--surface-bg);
+  padding: 0 0.5rem;
+}
+
+.step-circle {
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 50%;
+  background: var(--surface-card);
+  border: 3px solid var(--surface-border-strong);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 1rem;
+  color: var(--text-muted);
+  transition: all var(--transition-normal);
+  box-shadow: var(--shadow-sm);
+}
+
+.step-label {
+  margin-top: 0.5rem;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-align: center;
+  white-space: nowrap;
+}
+
+.step-item.active .step-circle {
+  background: var(--primary);
+  border-color: var(--accent-emerald);
+  color: white;
+  box-shadow: 0 0 0 4px var(--primary-glow);
+}
+
+.step-item.active .step-label {
+  color: var(--primary);
+  font-weight: 700;
+}
+
+.step-item.completed .step-circle {
+  background: var(--accent-emerald);
+  border-color: var(--accent-emerald);
+  color: white;
+}
+
+.wizard-step-pane {
+  display: none;
+}
+
+.wizard-step-pane.active {
+  display: block;
+  animation: fadeIn 0.35s ease forwards;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.card {
+  background: var(--surface-card);
+  border: 1px solid var(--surface-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  padding: 1.75rem;
+  margin-bottom: 1.5rem;
+  transition: all var(--transition-normal);
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.25rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--surface-border);
+}
+
+.card-title {
+  font-size: 1.15rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--text-main);
+}
+
+.card-subtitle {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.form-group {
+  margin-bottom: 1.25rem;
+}
+
+.form-label {
+  display: block;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--text-main);
+  margin-bottom: 0.4rem;
+}
+
+.form-label .required {
+  color: var(--status-danger);
+  margin-left: 0.2rem;
+}
+
+.form-control {
+  width: 100%;
+  padding: 0.65rem 0.95rem;
+  font-size: 0.92rem;
+  font-family: inherit;
+  color: var(--text-main);
+  background: var(--surface-card);
+  border: 1px solid var(--surface-border-strong);
+  border-radius: var(--radius-md);
+  transition: all var(--transition-fast);
+}
+
+.form-control:focus {
+  outline: none;
+  border-color: var(--primary-light);
+  box-shadow: 0 0 0 3px var(--primary-glow);
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1rem;
+}
+
+.form-row-3 {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 1rem;
+}
+
+/* Badges */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 0.25rem 0.6rem;
+  border-radius: var(--radius-full);
+}
+
+.badge-green { background: #D1FAE5; color: #065F46; }
+.badge-amber { background: #FEF3C7; color: #92400E; }
+.badge-blue  { background: #DBEAFE; color: #1E40AF; }
+
+/* Legal Evaluation Result Banner */
+.law-eval-box {
+  border-radius: var(--radius-lg);
+  padding: 1.25rem 1.5rem;
+  margin: 1.5rem 0;
+  display: flex;
+  align-items: flex-start;
+  gap: 1.25rem;
+  border: 1.5px solid transparent;
+  transition: all var(--transition-normal);
+}
+
+.law-eval-box.type-simple { background: #ECFDF5; border-color: #A7F3D0; }
+.law-eval-box.type-plan   { background: #FFFBEB; border-color: #FDE68A; }
+
+.eval-icon { font-size: 2rem; flex-shrink: 0; }
+.eval-content h4 { font-size: 1.05rem; font-weight: 800; margin-bottom: 0.35rem; }
+.eval-content p { font-size: 0.88rem; color: var(--text-muted); line-height: 1.6; }
+
+/* File Upload */
+.upload-dropzone {
+  border: 2px dashed var(--surface-border-strong);
+  border-radius: var(--radius-lg);
+  padding: 1.5rem;
+  text-align: center;
+  background: var(--surface-subtle);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.upload-dropzone:hover {
+  border-color: var(--primary-light);
+  background: var(--primary-subtle);
+}
+
+.upload-icon {
+  font-size: 2rem;
+  color: var(--primary-light);
+  margin-bottom: 0.4rem;
+}
+
+.file-preview-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 0.85rem;
+}
+
+.file-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.55rem 0.85rem;
+  background: var(--surface-card);
+  border: 1px solid var(--surface-border);
+  border-radius: var(--radius-md);
+  font-size: 0.85rem;
+}
+
+.drawing-expert-cta {
+  background: linear-gradient(135deg, #F0FDF4 0%, #DCFCE7 100%);
+  border: 1.5px solid #86EFAC;
+  border-radius: var(--radius-lg);
+  padding: 1.25rem 1.5rem;
+  margin-top: 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+/* ==================== Expert Marketplace Styles ==================== */
+.filter-bar {
+  background: var(--surface-card);
+  border: 1px solid var(--surface-border);
+  border-radius: var(--radius-lg);
+  padding: 1.25rem;
+  margin-bottom: 1.75rem;
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.filter-select {
+  padding: 0.5rem 0.85rem;
+  font-size: 0.88rem;
+  border: 1px solid var(--surface-border-strong);
+  border-radius: var(--radius-md);
+  background: var(--surface-card);
+  color: var(--text-main);
+  cursor: pointer;
+}
+
+.expert-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: 1.5rem;
+}
+
+.expert-card {
+  background: var(--surface-card);
+  border: 1px solid var(--surface-border);
+  border-radius: var(--radius-xl);
+  padding: 1.5rem;
+  box-shadow: var(--shadow-md);
+  transition: all var(--transition-normal);
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+}
+
+.expert-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-xl);
+  border-color: var(--primary-light);
+}
+
+.expert-card-badge {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+}
+
+.expert-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.expert-avatar {
+  width: 4rem;
+  height: 4rem;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--primary-subtle);
+  background: var(--surface-subtle);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--primary);
+  flex-shrink: 0;
+}
+
+.expert-info h3 {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: var(--text-main);
+}
+
+.expert-license {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin-top: 0.15rem;
+}
+
+.expert-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin: 0.75rem 0 1rem;
+}
+
+.expert-tag-item {
+  font-size: 0.75rem;
+  background: var(--surface-subtle);
+  color: var(--text-muted);
+  padding: 0.2rem 0.55rem;
+  border-radius: var(--radius-sm);
+}
+
+.expert-price-quote {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  margin-bottom: 1.25rem;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+}
+
+.price-val {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: var(--accent-amber);
+}
+
+.expert-card-actions {
+  margin-top: auto;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+}
+
+/* ==================== Escrow Milestone Timeline ==================== */
+.escrow-flow-card {
+  background: linear-gradient(135deg, #0F172A 0%, #1E293B 100%);
+  color: white;
+  border-radius: var(--radius-xl);
+  padding: 2rem;
+  margin-bottom: 2rem;
+  box-shadow: var(--shadow-xl);
+}
+
+.milestone-timeline {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 1rem;
+  position: relative;
+}
+
+.milestone-node {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: var(--radius-lg);
+  padding: 1.25rem 1rem;
+  text-align: center;
+  position: relative;
+}
+
+.milestone-node.completed {
+  background: rgba(16, 185, 129, 0.15);
+  border-color: #10B981;
+}
+
+.milestone-node.active {
+  background: rgba(217, 119, 6, 0.2);
+  border-color: #F59E0B;
+}
+
+.milestone-step-num {
+  width: 1.8rem;
+  height: 1.8rem;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.82rem;
+  font-weight: 800;
+  margin: 0 auto 0.6rem;
+}
+
+.milestone-node.completed .milestone-step-num {
+  background: #10B981;
+  color: white;
+}
+
+.milestone-node.active .milestone-step-num {
+  background: #F59E0B;
+  color: white;
+}
+
+.order-card {
+  background: var(--surface-card);
+  border: 1px solid var(--surface-border);
+  border-radius: var(--radius-xl);
+  padding: 1.5rem;
+  margin-bottom: 1.25rem;
+  box-shadow: var(--shadow-sm);
+  display: grid;
+  grid-template-columns: 1.3fr 1.2fr 1fr auto;
+  gap: 1.5rem;
+  align-items: center;
+}
+
+/* ==================== Verified Reviews Wall ==================== */
+.anti-fraud-banner {
+  background: linear-gradient(135deg, #1E1B4B 0%, #312E81 100%);
+  color: white;
+  border-radius: var(--radius-xl);
+  padding: 1.75rem 2rem;
+  margin-bottom: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+}
+
+.review-composer-card {
+  background: var(--surface-card);
+  border: 2px dashed var(--surface-border-strong);
+  border-radius: var(--radius-xl);
+  padding: 2rem;
+  margin-bottom: 2.5rem;
+}
+
+.lock-overlay-msg {
+  background: rgba(254, 242, 242, 0.95);
+  border: 1.5px solid #FCA5A5;
+  border-radius: var(--radius-lg);
+  padding: 1rem 1.25rem;
+  color: #991B1B;
+  font-size: 0.88rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.review-wall-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: 1.5rem;
+}
+
+.review-bubble {
+  background: var(--surface-card);
+  border: 1px solid var(--surface-border);
+  border-radius: var(--radius-xl);
+  padding: 1.5rem;
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+}
+
+.verified-gov-tag {
+  background: #ECFDF5;
+  border: 1px solid #6EE7B7;
+  color: #065F46;
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 0.2rem 0.5rem;
+  border-radius: var(--radius-sm);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  margin-top: 0.4rem;
+}
+
+/* ==================== Modals ==================== */
+.modal-backdrop {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(15, 23, 42, 0.65);
+  backdrop-filter: blur(4px);
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  opacity: 0;
+  visibility: hidden;
+  transition: all var(--transition-normal);
+}
+
+.modal-backdrop.open {
+  opacity: 1;
+  visibility: visible;
+}
+
+.modal-container {
+  background: var(--surface-card);
+  border-radius: var(--radius-xl);
+  max-width: 680px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: var(--shadow-xl);
+}
+
+.modal-header {
+  padding: 1.5rem 1.75rem 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--surface-border);
+}
+
+.modal-body {
+  padding: 1.5rem 1.75rem;
+}
+
+.modal-footer {
+  padding: 1rem 1.75rem 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  border-top: 1px solid var(--surface-border);
+}
+
+.modal-close {
+  background: transparent;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: var(--text-subtle);
+}
+
+/* ==========================================================================
+   Statutory Government Documents Print Engine (依水土保持計畫審核監督辦法格式)
+   ========================================================================== */
+
+.statutory-doc-selector-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-bottom: 1.5rem;
+  padding: 0.75rem 1rem;
+  background: var(--surface-subtle);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--surface-border);
+}
+
+.statutory-tab-btn {
+  padding: 0.45rem 0.9rem;
+  font-size: 0.85rem;
+  font-weight: 700;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--surface-border-strong);
+  background: var(--surface-card);
+  color: var(--text-main);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.statutory-tab-btn:hover {
+  background: var(--primary-subtle);
+  color: var(--primary);
+}
+
+.statutory-tab-btn.active {
+  background: var(--primary);
+  color: white;
+  border-color: var(--primary);
+  box-shadow: 0 2px 6px var(--primary-glow);
+}
+
+#printContainer {
+  background: white;
+  color: black;
+  width: 100%;
+  max-width: 880px;
+  margin: 1.5rem auto;
+  padding: 3rem 2.8rem;
+  border: 1px solid #CBD5E1;
+  box-shadow: var(--shadow-lg);
+  font-family: var(--font-official);
+  line-height: 1.6;
+  position: relative;
+}
+
+/* Official Document Headers */
+.print-gov-header {
+  text-align: center;
+  margin-bottom: 1.5rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 2px solid black;
+}
+
+.print-gov-header .gov-top-line {
+  font-size: 1rem;
+  letter-spacing: 2px;
+  font-weight: bold;
+}
+
+.print-gov-header .annex-tag {
+  float: right;
+  font-size: 0.82rem;
+  font-weight: normal;
+  border: 1px solid black;
+  padding: 0.1rem 0.4rem;
+}
+
+.print-gov-header h2 {
+  font-size: 1.75rem;
+  font-weight: 900;
+  letter-spacing: 3px;
+  margin: 0.5rem 0 0.25rem;
+}
+
+.print-gov-header .law-cite {
+  font-size: 0.9rem;
+  color: #222;
+}
+
+/* Statutory Table Layout */
+.official-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 1.25rem;
+  font-size: 0.95rem;
+}
+
+.official-table th,
+.official-table td {
+  border: 1px solid black;
+  padding: 0.5rem 0.65rem;
+  vertical-align: middle;
+}
+
+.official-table th {
+  background-color: #F8FAFC;
+  font-weight: bold;
+  text-align: center;
+}
+
+.official-table .sub-th {
+  background-color: #F1F5F9;
+  text-align: center;
+  font-size: 0.88rem;
+}
+
+.official-table td.center {
+  text-align: center;
+}
+
+/* Official Declaration and Stamp Blocks */
+.official-declaration-text {
+  font-size: 0.92rem;
+  margin: 1.25rem 0;
+  text-align: justify;
+  text-indent: 2rem;
+  line-height: 1.7;
+}
+
+.official-signatures-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  margin-top: 2rem;
+}
+
+.official-sig-box {
+  border: 1px solid black;
+  padding: 1.25rem 1rem;
+  min-height: 140px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.official-sig-title {
+  font-weight: bold;
+  font-size: 0.95rem;
+  text-align: center;
+  border-bottom: 1px dashed #666;
+  padding-bottom: 0.4rem;
+  margin-bottom: 0.5rem;
+}
+
+/* Review result stamp area for the government agency */
+.official-agency-review-box {
+  border: 2px solid black;
+  margin-top: 1.5rem;
+  padding: 1rem;
+  background: #FCFCFC;
+}
+
+.official-agency-review-box .box-title {
+  font-weight: 900;
+  font-size: 1.05rem;
+  text-align: center;
+  margin-bottom: 0.75rem;
+  border-bottom: 1px solid black;
+  padding-bottom: 0.35rem;
+}
+
+/* Page Break Utility */
+.doc-page-break {
+  page-break-after: always;
+  margin: 2.5rem 0;
+  border-top: 2px dashed #94A3B8;
+  text-align: center;
+  position: relative;
+}
+
+.doc-page-break::after {
+  content: '【法定格式換頁線 / Page Break】';
+  position: absolute;
+  top: -0.75rem;
+  left: 50%;
+  transform: translateX(-50%);
+  background: white;
+  padding: 0 1rem;
+  font-size: 0.75rem;
+  color: #64748B;
+  font-family: var(--font-base);
+}
+
+/* Print Media */
+@media print {
+  body {
+    background: white !important;
+    color: black !important;
+    font-size: 12pt;
+  }
+
+  .header-nav,
+  .domain-switcher-bar,
+  .hero-section,
+  .ribbon-bar,
+  .btn,
+  .stepper-header,
+  .wizard-footer,
+  .statutory-doc-selector-bar,
+  .card-header,
+  .no-print {
+    display: none !important;
+  }
+
+  .main-wrapper {
+    padding: 0 !important;
+  }
+
+  #printContainer {
+    border: none !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  .doc-page-break {
+    border: none !important;
+    margin: 0 !important;
+  }
+
+  .doc-page-break::after {
+    display: none !important;
+  }
+
+  .official-table th {
+    background-color: #EEE !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  @page {
+    size: A4 portrait;
+    margin: 1.5cm 1.5cm 1.5cm 1.5cm;
+  }
+}
+
+@media (max-width: 992px) {
+  .hero-inner { grid-template-columns: 1fr; }
+  .operator-dashboard-grid { grid-template-columns: 1fr 1fr; }
+  .order-card { grid-template-columns: 1fr; }
+  .milestone-timeline { grid-template-columns: 1fr; }
+  .official-signatures-grid { grid-template-columns: 1fr; }
+}
+
+/* ---- 補充：示範提示、資訊框、手機版、安全區 ---- */
+.tab-content-panel { display:none; }
+.tab-content-panel.active { display:block; animation: fadeIn .35s ease forwards; }
+.law-eval-box.type-info { background:#EFF6FF; border-color:#BFDBFE; }
+.demo-notice { background:#FEF3C7; color:#78350F; font-size:.84rem; line-height:1.5; padding:.55rem 1rem; text-align:center; border-bottom:1px solid #FDE68A; }
+:root[data-theme="dark"] .demo-notice, body[data-theme="dark"] .demo-notice { background:#422006; color:#FDE68A; border-color:#713F12; }
+body { padding-bottom: env(safe-area-inset-bottom, 0px); }
+.demo-notice { padding-top: calc(.55rem + env(safe-area-inset-top, 0px)); }
+.header-nav { top: 0; }
+.statutory-doc-selector-bar a, .card-subtitle a, p a { color: var(--primary-light); }
+@media (max-width: 768px) {
+  .nav-inner { height:auto; flex-wrap:wrap; gap:.5rem; padding:.5rem 0; }
+  .nav-links { order:3; width:100%; overflow-x:auto; white-space:nowrap; padding-bottom:.25rem; }
+  .domain-tabs { flex-wrap:wrap; }
+  .form-row-3 { grid-template-columns: 1fr; }
+  .stepper-header { overflow-x:auto; gap:.5rem; }
+  .expert-grid { grid-template-columns: 1fr; }
+  #printContainer { padding:1.25rem 1rem; overflow-x:auto; }
+  .official-table { font-size:.8rem; }
+  .hero-actions .btn { width:100%; margin:0 0 .5rem 0 !important; }
+}
+
+  </style>
+  <!-- Lucide Icons -->
+  <script src="https://cdn.jsdelivr.net/npm/lucide@0.469.0/dist/umd/lucide.min.js"></script>
+</head>
+<body>
+
+  <div class="demo-notice no-print" role="note">⚠️ <strong>示範原型</strong>：專家、評價、金額、統計均為<strong>虛構資料</strong>；金流與公文驗證皆為<strong>模擬</strong>，不會儲存或上傳任何資料。本站<strong>非政府機關網站</strong>，法定書表請以農業部農村發展及水土保持署公布之最新表單為準。</div>
+
+  <!-- ==================== Commercial Domain Switcher Bar ==================== -->
+  <div class="domain-switcher-bar no-print">
+    <div class="container domain-switcher-inner">
+      <div style="display: flex; align-items: center; gap: 0.75rem;">
+        <span style="font-weight: 700; color: #94A3B8;">業務領域選擇：</span>
+        <div class="domain-tabs">
+          <button class="domain-tab-btn active" id="tabDomainSoil" onclick="switchDomain('soil_care')">
+            <span>🌿 水土保持申報</span>
+          </button>
+          <button class="domain-tab-btn" id="tabDomainBuilding" onclick="switchDomain('building_permit')">
+            <span>🏗️ 建造與使用執照（示意）</span>
+          </button>
+          <button class="domain-tab-btn" id="tabDomainSewage" onclick="switchDomain('sewage_connection')">
+            <span>💧 污水用戶接管審查（示意）</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="commercial-badge-label">
+        <i data-lucide="badge-percent" style="color: #F59E0B; width: 1rem; height: 1rem;"></i>
+        <span>商業模式構想（示範）：媒合＋履約託管＋成交服務費 8%</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== Header & Navigation ==================== -->
+  <header class="header-nav no-print">
+    <div class="container nav-inner">
+      <a href="#" class="brand" onclick="switchTab('wizard')">
+        <div class="brand-icon">
+          <i id="brandDomainIcon" data-lucide="sprout"></i>
+        </div>
+        <div class="brand-text">
+          政務通 <span style="font-size: 1rem; color: var(--accent-amber);">ProMatch</span>
+          <small id="brandDomainSubtitle">智慧水土保持申請與專家履約媒合商業平台</small>
+        </div>
+      </a>
+
+      <ul class="nav-links">
+        <li><a href="#wizard" class="nav-item active" id="nav-wizard" onclick="switchTab('wizard')"><i data-lucide="file-text"></i> 智慧申請嚮導</a></li>
+        <li><a href="#experts" class="nav-item" id="nav-experts" onclick="switchTab('experts')"><i data-lucide="users"></i> 專家市集 (代書/技師)</a></li>
+        <li><a href="#escrow" class="nav-item" id="nav-escrow" onclick="switchTab('escrow')"><i data-lucide="shield-check"></i> 履約託管（示範）</a></li>
+        <li><a href="#reviews" class="nav-item" id="nav-reviews" onclick="switchTab('reviews')"><i data-lucide="award"></i> 評價（示範）</a></li>
+        <li><a href="#partners" class="nav-item" id="nav-partners" onclick="switchTab('partners')"><i data-lucide="handshake"></i> 技師加盟專區</a></li>
+      </ul>
+
+      <div class="nav-actions">
+        <button class="btn btn-secondary btn-sm" id="themeToggleBtn" onclick="toggleTheme()" title="切換深淺模式">
+          <i data-lucide="moon"></i>
+        </button>
+        <button class="btn btn-primary btn-sm" onclick="switchTab('wizard')">
+          <i data-lucide="plus-circle"></i> 立即填報
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ==================== Dynamic Hero Banner Section ==================== -->
+  <section class="hero-section no-print">
+    <div class="container hero-inner">
+      <div class="hero-content">
+        <div class="hero-badges">
+          <span class="hero-badge-pill"><i data-lucide="file-check-2"></i> 依辦法第三條規模快篩</span>
+          <span class="hero-badge-pill"><i data-lucide="shield-check"></i> 履約款項託管流程（示範）</span>
+          <span class="hero-badge-pill"><i data-lucide="percent"></i> 服務費 8%（構想）</span>
+        </div>
+        <h1 id="heroTitle">山坡地水土保持申報<br><span class="hero-highlight">民眾小白通關・專家履約媒合</span></h1>
+        <p class="hero-subtitle" id="heroSubtitle">
+          依《水土保持計畫審核監督辦法》第三條先判斷是否落在簡易申報範圍，再套入參考主管機關公布版式的申報書與完工申報書預覽列印。正式送件前，請務必與主管機關最新表單核對。
+        </p>
+        <div class="hero-actions">
+          <button class="btn btn-accent btn-lg" onclick="switchTab('wizard')">
+            <i data-lucide="play-circle"></i> 開始 5 步驟試填
+          </button>
+          <button class="btn btn-secondary btn-lg" style="margin-left: 0.75rem; background: rgba(255,255,255,0.15); color:white; border-color: rgba(255,255,255,0.3);" onclick="switchTab('experts')">
+            <i data-lucide="search"></i> 尋找執業專業人員
+          </button>
+        </div>
+      </div>
+
+      <div class="hero-stats-card">
+        <div class="stats-grid">
+          <div class="stat-box"><div class="stat-number">2,000<small>m³</small></div><div class="stat-label">挖填合計上限（辦法第三條）</div></div>
+          <div class="stat-box"><div class="stat-number">1<small>公頃</small></div><div class="stat-label">整坡／農業設施面積上限</div></div>
+          <div class="stat-box"><div class="stat-number">5<small>步驟</small></div><div class="stat-label">試填流程</div></div>
+          <div class="stat-box"><div class="stat-number">示範</div><div class="stat-label">專家與金額皆為虛構資料</div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== Main Application Container ==================== -->
+  <main class="container main-wrapper">
+
+    <!-- ================================================================
+         TAB 1: 智慧申請精靈 (Application Wizard)
+         ================================================================ -->
+    <div class="tab-content-panel active" id="wizardPanel">
+      
+      <!-- Stepper Progress Header -->
+      <div class="stepper-header no-print">
+        <div class="step-item active" id="stepIndicator1" onclick="goToStep(1)">
+          <div class="step-circle">1</div>
+          <div class="step-label" id="stepLabel1">法規快篩判定</div>
+        </div>
+        <div class="step-item" id="stepIndicator2" onclick="goToStep(2)">
+          <div class="step-circle">2</div>
+          <div class="step-label" id="stepLabel2">申請人與標的</div>
+        </div>
+        <div class="step-item" id="stepIndicator3" onclick="goToStep(3)">
+          <div class="step-circle">3</div>
+          <div class="step-label" id="stepLabel3">工程與設施配置</div>
+        </div>
+        <div class="step-item" id="stepIndicator4" onclick="goToStep(4)">
+          <div class="step-circle">4</div>
+          <div class="step-label" id="stepLabel4">圖說整備與媒合</div>
+        </div>
+        <div class="step-item" id="stepIndicator5" onclick="goToStep(5)">
+          <div class="step-circle">5</div>
+          <div class="step-label" id="stepLabel5">書表預覽與列印</div>
+        </div>
+      </div>
+
+      <!-- Quick Fill Sample Banner -->
+      <div class="card no-print" style="background: linear-gradient(to right, #F0FDF4, #F8FAFC); border-left: 4px solid var(--primary-light); padding: 1rem 1.5rem; margin-bottom: 1.5rem;">
+        <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.75rem;">
+          <div>
+            <strong><i data-lucide="lightbulb" style="vertical-align: middle; color: #D97706; margin-right: 0.25rem;"></i> 民眾快速體驗通道：</strong>
+            <span style="font-size: 0.88rem; color: var(--text-muted);" id="demoPromptText">點擊右側載入虛構示範資料（非真實個資），快速看懂各步驟。</span>
+          </div>
+          <button class="btn btn-secondary btn-sm" onclick="loadDemoData()">
+            <i data-lucide="sparkles"></i> 載入示範樣板資料
+          </button>
+        </div>
+      </div>
+
+      <!-- Form Container -->
+      <form id="soilAppForm" onsubmit="return false;">
+        
+        <!-- STEP 1: 法規資格快篩 -->
+        <div class="wizard-step-pane active" id="step1">
+          <div class="card">
+            <div class="card-header">
+              <div>
+                <h2 class="card-title" id="pane1Title"><i data-lucide="compass"></i> 第一步：法規資格快篩與門檻試算</h2>
+                <div class="card-subtitle" id="pane1Subtitle">依《水土保持計畫審核監督辦法》第三條各款，初步試算是否得以簡易水土保持申報書代替</div>
+              </div>
+            </div>
+
+            <!-- Dynamic Fields for Step 1 -->
+            <div id="step1DynamicFields">
+              <!-- Rendered by app.js based on domain -->
+            </div>
+
+            <!-- Dynamic Law Evaluation Box -->
+            <div id="lawEvalResult" class="law-eval-box type-simple">
+              <div class="eval-icon">ℹ️</div>
+              <div class="eval-content">
+                <h4 id="evalTitle">初步試算</h4>
+                <p id="evalDesc">
+                  請填寫下列欄位。
+                </p>
+                <div class="eval-tags" id="evalTags">
+                  
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- STEP 2: 申請人與標的資料 -->
+        <div class="wizard-step-pane" id="step2">
+          <div class="card">
+            <div class="card-header">
+              <div>
+                <h2 class="card-title"><i data-lucide="user"></i> 第二步：水土保持義務人與實施地點土地標的</h2>
+                <div class="card-subtitle">登錄申請人、地段地號與土地權利證明（勿輸入真實個資於示範版）</div>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label" id="lblApplicantName">水土保持義務人姓名 (或法人名稱) <span class="required">*</span></label>
+                <input type="text" class="form-control" id="applicantName" value="" placeholder="請輸入姓名">
+              </div>
+              <div class="form-group">
+                <label class="form-label" id="lblApplicantId">國民身分證統一編號 (或營利事業統編) <span class="required">*</span></label>
+                <input type="text" class="form-control" id="applicantId" value="" placeholder="例如：M123456789">
+              </div>
+              <div class="form-group">
+                <label class="form-label">聯絡電話 (日/夜/行動電話) <span class="required">*</span></label>
+                <input type="text" class="form-control" id="applicantPhone" value="" placeholder="例如：0912-345678">
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label">戶籍地址 / 營業所在地 <span class="required">*</span></label>
+                <input type="text" class="form-control" id="applicantAddress" value="" placeholder="請輸入完整通訊地址">
+              </div>
+              <div class="form-group">
+                <label class="form-label">委任代理人姓名 (無則免填)</label>
+                <input type="text" class="form-control" id="agentName" value="" placeholder="受委任之代理人姓名">
+              </div>
+              <div class="form-group">
+                <label class="form-label">代理人身分證號及電話</label>
+                <input type="text" class="form-control" id="agentPhone" value="" placeholder="例如：0928-888999">
+              </div>
+            </div>
+
+            <hr style="margin: 1.5rem 0; border: none; border-top: 1px solid var(--surface-border);">
+
+            <h3 style="font-size: 1.05rem; font-weight: 700; margin-bottom: 1rem; color: var(--primary);">
+              <i data-lucide="map-pin"></i> 實施地點土地座標與地籍清冊
+            </h3>
+
+            <div class="form-row-3">
+              <div class="form-group">
+                <label class="form-label">直轄市/縣(市)主管機關 <span class="required">*</span></label>
+                <select class="form-control" id="landCounty">
+                  <option value="" selected disabled>請選擇縣市</option>
+                  <option value="南投縣">南投縣政府</option>
+                  <option value="苗栗縣">苗栗縣政府</option>
+                  <option value="宜蘭縣">宜蘭縣政府</option>
+                  <option value="新北市">新北市政府</option>
+                  <option value="台中市">台中市政府</option>
+                  <option value="桃園市">桃園市政府</option>
+                  <option value="新竹縣">新竹縣政府</option>
+                  <option value="花蓮縣">花蓮縣政府</option>
+                  <option value="其他">其他縣市（示範版未列）</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">鄉(鎮、市、區) <span class="required">*</span></label>
+                <input type="text" class="form-control" id="landDistrict" value="" placeholder="例如：○○鄉">
+              </div>
+              <div class="form-group">
+                <label class="form-label">地段及地號 <span class="required">*</span></label>
+                <input type="text" class="form-control" id="landLotNo" value="" placeholder="例如：○○段 0000-0000 地號">
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label">基地總面積 (平方公尺) <span class="required">*</span></label>
+                <input type="number" class="form-control" id="landTotalArea" value="3850">
+              </div>
+              <div class="form-group">
+                <label class="form-label">使用分區 / 使用地類別 <span class="required">*</span></label>
+                <input type="text" class="form-control" id="landZone" value="山坡地保育區 / 農牧用地">
+              </div>
+              <div class="form-group">
+                <label class="form-label">土地權利狀態 <span class="required">*</span></label>
+                <select class="form-control" id="landOwnership">
+                  <option value="自有土地" selected>自有土地（申請人為所有權人）</option>
+                  <option value="公有租賃">公有租賃（檢附林保署/國產署租約及同意書）</option>
+                  <option value="私有租賃">私有租賃（檢附土地使用權同意書）</option>
+                  <option value="共有持分">共有土地（檢附共有人使用同意書）</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Upload simulation -->
+            <div class="form-group" style="margin-top: 1rem;">
+              <label class="form-label">法定證明文件上傳 (身分證、謄本、地籍圖、同意書) <span class="help-tip">依辦法自動列入檢附清單</span></label>
+              <div class="upload-dropzone" onclick="simulateFileUpload('step2Docs')">
+                <div class="upload-icon"><i data-lucide="upload-cloud"></i></div>
+                <div class="upload-text">點擊上傳土地登記謄本、地籍圖、土地使用權同意書或身分證影本</div>
+                <div class="upload-hint">支援 PDF, JPG, PNG 格式</div>
+              </div>
+              <div class="file-preview-list" id="step2FileList"><div style="font-size:.82rem;color:var(--text-muted);">（示範版不會實際上傳檔案）</div></div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- STEP 3: 工程與設施配置 -->
+        <div class="wizard-step-pane" id="step3">
+          <div class="card">
+            <div class="card-header">
+              <div>
+                <h2 class="card-title" id="pane3Title"><i data-lucide="hammer"></i> 第三步：水土保持處理與維護項目配置</h2>
+                <div class="card-subtitle" id="pane3Subtitle">依據辦法規範載明開挖量體、工期與設施規格數量</div>
+              </div>
+            </div>
+
+            <div class="form-row-3">
+              <div class="form-group">
+                <label class="form-label">預計施工期程 (月) <span class="required">*</span></label>
+                <input type="number" class="form-control" id="projectDuration" value="6">
+              </div>
+              <div class="form-group">
+                <label class="form-label">預計開工日期</label>
+                <input type="date" class="form-control" id="projectStartDate" value="2026-10-01">
+              </div>
+              <div class="form-group">
+                <label class="form-label">預計完工日期</label>
+                <input type="date" class="form-control" id="projectEndDate" value="2027-03-31">
+              </div>
+            </div>
+
+            <!-- Domain specific facilities checkboxes -->
+            <div class="form-group" id="step3FacilitiesContainer">
+              <!-- Rendered by app.js -->
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">計畫目的與實施效益說明</label>
+              <textarea class="form-control" id="projectBenefit" rows="3">本案申請整坡主要供作合法農業設施使用。基地設置RC截排水溝導引坡面逕流至沉砂池，開挖邊坡設置重力式石籠擋土牆並噴植草皮，能有效涵養水源、杜絕土石流失風險。</textarea>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- STEP 4: 圖說整備與技師媒合 -->
+        <div class="wizard-step-pane" id="step4">
+          <div class="card">
+            <div class="card-header">
+              <div>
+                <h2 class="card-title" id="pane4Title"><i data-lucide="image"></i> 第四步：必要圖說文件整備與專業技師協作</h2>
+                <div class="card-subtitle">依辦法規定檢附平面配置圖、構造物標準圖與現況全景照片</div>
+              </div>
+            </div>
+
+            <div id="step4DrawingsContainer">
+              <!-- Rendered dynamically by app.js based on domain -->
+            </div>
+
+            <!-- SPECIAL FEATURE CTA: 推薦技師/代書/建築師媒合 -->
+            <div class="drawing-expert-cta">
+              <div class="drawing-cta-text">
+                <h4 id="ctaExpertMatchTitle"><i data-lucide="user-check"></i> 需要專業人員協助繪圖或代辦？</h4>
+                <p id="ctaExpertMatchDesc">
+                  可預覽委託水保技師、土木大地技師或地政士代為繪圖／代辦的流程。款項託管與撥款為示範模擬，實際上線須與合法金融機構合作。
+                </p>
+              </div>
+              <button class="btn btn-primary" onclick="openCommissionModalWithCurrentData()">
+                <i data-lucide="send"></i> 帶入本案資料・預覽委託流程
+              </button>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- STEP 5: 依《水土保持計畫審核監督辦法》法定格式輸出公文書表 -->
+        <div class="wizard-step-pane" id="step5">
+          
+          <!-- Statutory Form Selector Bar (符合審核監督辦法所列各表) -->
+          <div class="card no-print" style="margin-bottom: 1.5rem; background: #FAFBFD;">
+            <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem; margin-bottom: 1rem;">
+              <div>
+                <h3 style="font-size: 1.15rem; font-weight: 800; color: var(--primary);">
+                  <i data-lucide="file-check"></i> 書表預覽與列印
+                </h3>
+                <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.2rem;">
+                  版式參考農村水保署公布之表單（簡易申報書、簡易處理完工申報書），僅供備稿。<strong>正式送件請下載官方最新表單並逐欄核對</strong>：<a href="https://www.ardswc.gov.tw/Home/Download/" target="_blank" rel="noopener">水保署下載專區</a>、<a href="https://law.moj.gov.tw/LawClass/LawAll.aspx?pcode=M0110012" target="_blank" rel="noopener">全國法規資料庫（審核監督辦法）</a>。
+                </p>
+              </div>
+              <div style="display: flex; gap: 0.6rem; flex-wrap: wrap;">
+                <button class="btn btn-secondary btn-sm" onclick="exportDataJSON()">
+                  <i data-lucide="download"></i> 備份案件 JSON
+                </button>
+                <button class="btn btn-accent btn-sm" onclick="triggerPrint()">
+                  <i data-lucide="printer"></i> 列印當前法定書表 (A4)
+                </button>
+                <button class="btn btn-primary btn-sm" onclick="printAllStatutoryDossier()">
+                  <i data-lucide="book-open"></i> 整併列印（申報書＋檢查表＋開工）
+                </button>
+              </div>
+            </div>
+
+            <!-- Tabs to switch between Statutory Forms -->
+            <div class="statutory-doc-selector-bar">
+              <span style="font-size: 0.84rem; font-weight: 700; color: var(--text-muted);">選擇法定書表：</span>
+              <button class="statutory-tab-btn active" id="btnDocDecl" onclick="switchStatutoryDoc('declaration')">
+                📑 1. 簡易水土保持申報書（參考官方 016）
+              </button>
+              <button class="statutory-tab-btn" id="btnDocCommence" onclick="switchStatutoryDoc('commencement')">
+                🚀 2. 開工申報（輔助表單）
+              </button>
+              <button class="statutory-tab-btn" id="btnDocComplete" onclick="switchStatutoryDoc('completion')">
+                🏁 3. 簡易水土保持處理完工申報書（參考官方 027）
+              </button>
+              <button class="statutory-tab-btn" id="btnDocCheck" onclick="switchStatutoryDoc('checklist')">
+                📋 4. 自主檢查紀錄（輔助表單）
+              </button>
+            </div>
+          </div>
+
+          <!-- Official Government Form Simulation Container (100% 依照法定格式渲染) -->
+          <div id="printContainer">
+            <!-- Dynamically populated based on active statutory document and domain -->
+          </div>
+
+        </div>
+
+      </form>
+
+      <!-- Wizard Navigation Footer -->
+      <div class="wizard-footer no-print">
+        <button class="btn btn-secondary" id="btnPrevStep" onclick="navigateStep(-1)" style="visibility: hidden;">
+          <i data-lucide="arrow-left"></i> 上一步
+        </button>
+        <div>
+          <span id="stepCounterText" style="font-size: 0.85rem; color: var(--text-muted); margin-right: 1rem;">步驟 1 / 5</span>
+          <button class="btn btn-primary" id="btnNextStep" onclick="navigateStep(1)">
+            下一步 <i data-lucide="arrow-right"></i>
+          </button>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ================================================================
+         TAB 2: 專家市集 (Expert Marketplace)
+         ================================================================ -->
+    <div class="tab-content-panel" id="expertsPanel">
+      
+      <div class="card-header no-print" style="margin-bottom: 1.5rem; border: none; padding-bottom: 0;">
+        <div>
+          <h2 style="font-size: 1.45rem; font-weight: 800; color: var(--text-main);" id="expertsPanelTitle">
+            <i data-lucide="users" style="color: var(--primary);"></i> 專業執業人員市集
+          </h2>
+          <p style="font-size: 0.9rem; color: var(--text-muted); margin-top: 0.25rem;">
+            以下專家、證號、評分、報價<strong>皆為虛構示範資料</strong>。正式上線時須逐一查核執業證照後才可上架。
+          </p>
+        </div>
+      </div>
+
+      <!-- Filter Bar -->
+      <div class="filter-bar no-print">
+        <div class="filter-groups">
+          <div>
+            <label style="font-size: 0.8rem; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 0.2rem;">服務身分</label>
+            <select class="filter-select" id="filterRole" onchange="renderExpertsList()">
+              <!-- Options populated by app.js -->
+            </select>
+          </div>
+          <div>
+            <label style="font-size: 0.8rem; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 0.2rem;">承辦服務區域</label>
+            <select class="filter-select" id="filterCounty" onchange="renderExpertsList()">
+              <option value="all">全台灣各縣市</option>
+              <option value="南投縣">南投縣</option>
+              <option value="苗栗縣">苗栗縣</option>
+              <option value="宜蘭縣">宜蘭縣</option>
+              <option value="新北市">新北市</option>
+              <option value="台中市">台中市</option>
+              <option value="桃園市">桃園市</option>
+              <option value="新竹縣">新竹縣</option>
+              <option value="花蓮縣">花蓮縣</option>
+            </select>
+          </div>
+        </div>
+
+        <div>
+          <label style="font-size: 0.8rem; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 0.2rem;">評價排序</label>
+          <select class="filter-select" id="sortOrder" onchange="renderExpertsList()">
+            <option value="rating">依評價高低（示範）</option>
+            <option value="cases">依已核准案件量最多</option>
+            <option value="price_asc">報價透明親民優先</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Expert Cards Grid -->
+      <div class="expert-grid" id="expertCardsContainer">
+        <!-- Rendered dynamically by app.js -->
+      </div>
+
+    </div>
+
+    <!-- ================================================================
+         TAB 3: 履約託管與抽成 (Escrow & Platform Commission)
+         ================================================================ -->
+    <div class="tab-content-panel" id="escrowPanel">
+      
+      <!-- Platform Operator Business Revenue Dashboard -->
+      <div class="operator-dashboard-grid no-print">
+        <div class="operator-stat-card">
+          <span class="lbl">平台累計撮合總成交額 (GMV)</span>
+          <span class="val" id="statGMV">NT$ 1,280,000</span>
+          <span style="font-size: 0.75rem; color: #059669;">▲ 示範數字</span>
+        </div>
+        <div class="operator-stat-card">
+          <span class="lbl">平台媒合服務費 (8% 營收)</span>
+          <span class="val" id="statRevenue" style="color: #D97706;">NT$ 102,400</span>
+          <span style="font-size: 0.75rem; color: var(--text-muted);">示範計算</span>
+        </div>
+        <div class="operator-stat-card">
+          <span class="lbl">專戶履約託管中保護金</span>
+          <span class="val" id="statEscrowHold" style="color: #2563EB;">NT$ 95,000</span>
+          <span style="font-size: 0.75rem; color: #2563EB;">（示範數字）</span>
+        </div>
+        <div class="operator-stat-card">
+          <span class="lbl">加盟認證技師/專家數</span>
+          <span class="val">示範</span>
+          <span style="font-size: 0.75rem; color: #059669;">虛構資料</span>
+        </div>
+      </div>
+
+      <!-- Escrow Banner & Flow Visualizer -->
+      <div class="escrow-flow-card no-print">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem; flex-wrap: wrap;">
+          <div style="font-size: 1.35rem; font-weight: 800; display: flex; align-items: center; gap: 0.6rem;">
+            <i data-lucide="shield-check" style="color: #34D399;"></i>
+            履約託管與服務費機制（示範）
+          </div>
+          <span class="badge badge-amber" style="font-size: 0.82rem; padding: 0.35rem 0.8rem;">
+            示範流程・退款條件依契約約定
+          </span>
+        </div>
+        <div style="font-size: 0.88rem; color: #94A3B8; margin-bottom: 1.75rem; max-width: 850px;">
+          【示範流程・尚未有真實金流】構想：委託人款項存入信託專戶／履約保證機制；專家完成圖說送審並取得主管機關核准文件後，扣除 <strong>8% 平台服務費</strong>，其餘 <strong>92% 撥付專家</strong>。實際上線須與銀行或合法第三方支付業者合作，並經律師、會計師確認合規。
+        </div>
+
+        <div class="milestone-timeline">
+          <div class="milestone-node completed">
+            <div class="milestone-step-num">1</div>
+            <div class="milestone-name">線上報價委託</div>
+            <div class="milestone-status-txt">確認工作範圍</div>
+          </div>
+          <div class="milestone-node active">
+            <div class="milestone-step-num">2</div>
+            <div class="milestone-name">存入履約專戶</div>
+            <div class="milestone-status-txt">款項安全凍結</div>
+          </div>
+          <div class="milestone-node">
+            <div class="milestone-step-num">3</div>
+            <div class="milestone-name">測量繪圖送件</div>
+            <div class="milestone-status-txt">掛號向機關送審</div>
+          </div>
+          <div class="milestone-node">
+            <div class="milestone-step-num">4</div>
+            <div class="milestone-name">官方審查核准</div>
+            <div class="milestone-status-txt">取得核准公文/建照</div>
+          </div>
+          <div class="milestone-node">
+            <div class="milestone-step-num">5</div>
+            <div class="milestone-name">扣除抽成撥款</div>
+            <div class="milestone-status-txt">92%撥付・開立發票</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Active Escrow Orders Tracker -->
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <h3 class="card-title"><i data-lucide="list-checks"></i> 進行中案件履約進度與分潤試算</h3>
+            <div class="card-subtitle">透明檢視專戶凍結金、8% 平台抽成與技師實收金額</div>
+          </div>
+          <button class="btn btn-primary btn-sm" onclick="openCommissionModalWithCurrentData()">
+            <i data-lucide="plus"></i> 發起新託管委託
+          </button>
+        </div>
+
+        <div id="escrowOrdersContainer">
+          <!-- Rendered dynamically by app.js -->
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ================================================================
+         TAB 4: 官方執照認證評價 (Verified Reviews)
+         ================================================================ -->
+    <div class="tab-content-panel" id="reviewsPanel">
+      
+      <!-- Anti-fraud highlight banner -->
+      <div class="anti-fraud-banner no-print">
+        <div class="anti-fraud-text">
+          <h3><i data-lucide="shield-alert" style="color: #FBBF24;"></i> 官方核准公文 / 執照字號 防刷評防弊機制</h3>
+          <p>
+            構想：案件取得主管機關核准文件後才可評價，降低假評價。示範版僅檢查是否填寫字號，<strong>尚未實際查證</strong>；正式版須上傳公文並經人工或線上比對。
+          </p>
+        </div>
+        <div style="text-align: right; min-width: 140px;">
+          <div style="font-size: 1.4rem; font-weight: 800; color: #FBBF24;">示範</div>
+          <div style="font-size: 0.78rem; color: #CBD5E1;">尚未實際查證</div>
+        </div>
+      </div>
+
+      <!-- Dynamic Review Composer Card -->
+      <div class="card review-composer-card" id="reviewComposerBox">
+        <div class="card-header" style="border: none; padding-bottom: 0;">
+          <h3 class="card-title">
+            <i data-lucide="pen-tool"></i> 撰寫專家評價回饋
+          </h3>
+          <span id="composerStatusBadge" class="badge badge-amber"><i data-lucide="lock"></i> 案件未獲官方公文前鎖定</span>
+        </div>
+
+        <div id="reviewLockNotice" class="lock-overlay-msg">
+          <i data-lucide="alert-triangle" style="flex-shrink: 0;"></i>
+          <div>
+            <strong>防弊機制生效中：</strong>
+            目前選擇的案件尚未取得主管機關核准公文或執照字號。請於「履約託管進度」上傳官方核准函或點擊「模擬取得公文解鎖」後，方可送出評分！
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">選擇已委託案件</label>
+            <select class="form-control" id="reviewCaseSelect" onchange="checkReviewUnlockState()">
+              <!-- Options populated by app.js -->
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label" id="lblGovDocInput">官方核准公文函號 / 建照執照號碼 <span class="required">*</span></label>
+            <input type="text" class="form-control" id="reviewGovDocNo" placeholder="例如：投府農水字第1130098231號 / (113)中都建字第01248號" value="">
+          </div>
+        </div>
+
+        <div class="form-row-3">
+          <div class="form-group">
+            <label class="form-label">圖說繪製專業度</label>
+            <select class="form-control" id="reviewScore1">
+              <option value="5">5 星 - 極佳，一次審查通過</option>
+              <option value="4">4 星 - 良好，小修正通過</option>
+              <option value="3">3 星 - 普通</option>
+              <option value="2">2 星 - 待改進</option>
+              <option value="1">1 星 - 不滿意</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">時效與進度回報</label>
+            <select class="form-control" id="reviewScore2">
+              <option value="5">5 星 - 主動回報，進度超前</option>
+              <option value="4">4 星 - 依約定期程完成</option>
+              <option value="3">3 星 - 偶爾需催促</option>
+              <option value="2">2 星 - 常需催促</option>
+              <option value="1">1 星 - 嚴重延誤</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">總體星級推薦</label>
+            <select class="form-control" id="reviewTotalRating">
+              <option value="5">★★★★★ 5.0 極力推薦</option>
+              <option value="4">★★★★☆ 4.0 值得信賴</option>
+              <option value="3">★★★☆☆ 3.0 符合標準</option>
+              <option value="2">★★☆☆☆ 2.0 待改進</option>
+              <option value="1">★☆☆☆☆ 1.0 不推薦</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">委託心得評語</label>
+          <textarea class="form-control" id="reviewCommentText" rows="3" placeholder="請分享專家在現地踏勘、圖說繪製、公文補正與會勘時的專業協助..."></textarea>
+        </div>
+
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 1rem;">
+          <button class="btn btn-secondary btn-sm" onclick="simulateDocApprovalUnlock()">
+            <i data-lucide="key"></i> 示範用：模擬取得核准文件並解鎖
+          </button>
+          <button class="btn btn-primary" id="btnSubmitReview" onclick="submitVerifiedReview()" disabled>
+            <i data-lucide="send"></i> 送出官方認證評價
+          </button>
+        </div>
+      </div>
+
+      <!-- Real Verified Reviews Wall -->
+      <h3 style="font-size: 1.25rem; font-weight: 800; margin-bottom: 1.25rem; color: var(--text-main);">
+        <i data-lucide="message-square-check" style="color: var(--primary);"></i> 評價牆（示範內容）
+      </h3>
+
+      <div class="review-wall-grid" id="verifiedReviewsWall">
+        <!-- Rendered dynamically by app.js -->
+      </div>
+
+    </div>
+
+    <!-- ================================================================
+         TAB 5: 技師專家加盟招募專區 (Partner Recruitment)
+         ================================================================ -->
+    <div class="tab-content-panel" id="partnersPanel">
+      
+      <div class="card" style="background: linear-gradient(135deg, #0F172A 0%, #1E293B 100%); color: white; padding: 2.5rem; border-radius: var(--radius-xl); margin-bottom: 2rem;">
+        <div style="max-width: 800px;">
+          <span class="badge badge-amber" style="margin-bottom: 0.75rem;">招募執業技師・建築師・代書・水電承裝商</span>
+          <h2 style="font-size: 1.85rem; font-weight: 800; line-height: 1.3; margin-bottom: 0.75rem;">
+            加入政務通 ProMatch（構想）：<br>讓案件主動找上您，降低收款風險
+          </h2>
+          <p style="font-size: 0.95rem; color: #CBD5E1; line-height: 1.7; margin-bottom: 1.5rem;">
+            以往執業最怕遇到：花費大把時間現地測量繪圖，公文通過後業主藉故拖延尾款，甚至一走了之。
+            構想採用<strong>第三方履約保證機制</strong>：委託成立時款項先存入託管機制，取得核准文件後依契約撥款。
+          </p>
+          <button class="btn btn-accent btn-lg" onclick="openPartnerJoinModal()">
+            <i data-lucide="user-plus"></i> 加盟意願登記（示範）
+          </button>
+        </div>
+      </div>
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.5rem; margin-bottom: 2rem;">
+        <div class="card">
+          <div style="font-size: 2rem; color: var(--primary); margin-bottom: 0.75rem;"><i data-lucide="coins"></i></div>
+          <h3 style="font-size: 1.15rem; font-weight: 800; margin-bottom: 0.4rem;">1. 降低收款風險（履約託管構想）</h3>
+          <p style="font-size: 0.88rem; color: var(--text-muted); line-height: 1.6;">
+            接案前款項先行託管，核准後依契約結算，減少事後催款的情況。
+          </p>
+        </div>
+
+        <div class="card">
+          <div style="font-size: 2rem; color: var(--accent-amber); margin-bottom: 0.75rem;"><i data-lucide="trending-up"></i></div>
+          <h3 style="font-size: 1.15rem; font-weight: 800; margin-bottom: 0.4rem;">2. 需求配對（構想）</h3>
+          <p style="font-size: 0.88rem; color: var(--text-muted); line-height: 1.6;">
+            以地區與專長篩選，讓有需求的民眾找到適合的專業人員。實際案源量須上線後才能驗證。
+          </p>
+        </div>
+
+        <div class="card">
+          <div style="font-size: 2rem; color: var(--accent-blue); margin-bottom: 0.75rem;"><i data-lucide="badge-percent"></i></div>
+          <h3 style="font-size: 1.15rem; font-weight: 800; margin-bottom: 0.4rem;">3. 成交才收服務費（構想 8%）</h3>
+          <p style="font-size: 0.88rem; color: var(--text-muted); line-height: 1.6;">
+            構想：無月費、無上架費，僅於成交撥款時收取服務費。費率與各專業人員法規對招攬、收費之限制須先經法務確認。
+          </p>
+        </div>
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- ==================== Modals ==================== -->
+
+  <!-- Expert Profile Detail Modal -->
+  <div class="modal-backdrop" id="expertModalBackdrop">
+    <div class="modal-container">
+      <div class="modal-header">
+        <h3 class="modal-title" id="modalExpertName">專家履歷詳情</h3>
+        <button class="modal-close" onclick="closeModal('expertModalBackdrop')">&times;</button>
+      </div>
+      <div class="modal-body" id="modalExpertBody">
+        <!-- Injected via JavaScript -->
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeModal('expertModalBackdrop')">關閉</button>
+        <button class="btn btn-primary" id="btnModalHire" onclick="hireSelectedExpert()">
+          <i data-lucide="send"></i> 發起履約委託諮詢
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Commission / Escrow Order Modal -->
+  <div class="modal-backdrop" id="commissionModalBackdrop">
+    <div class="modal-container">
+      <div class="modal-header">
+        <h3 class="modal-title"><i data-lucide="file-plus" style="color: var(--primary);"></i> 發起委託與履約金流託管</h3>
+        <button class="modal-close" onclick="closeModal('commissionModalBackdrop')">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label class="form-label">受託執業專家</label>
+          <select class="form-control" id="commExpertSelect">
+            <!-- options generated by JS -->
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">委託服務項目</label>
+          <select class="form-control" id="commServiceType">
+            <!-- options generated by JS based on domain -->
+          </select>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">委託總金額 (NT$)</label>
+            <input type="number" class="form-control" id="commAmount" value="25000" oninput="updateCommissionBreakdownPreview()">
+          </div>
+          <div class="form-group">
+            <label class="form-label">約定交付工作期限</label>
+            <input type="date" class="form-control" id="commDueDate" value="2026-10-25">
+          </div>
+        </div>
+
+        <!-- Commission Breakdown Preview -->
+        <div class="commission-ledger-box" id="commissionBreakdownBox">
+          <div style="font-weight: 700; color: #166534; margin-bottom: 0.5rem; display: flex; justify-content: space-between;">
+            <span><i data-lucide="calculator" style="vertical-align: middle;"></i> 平台分帳與金流試算明細：</span>
+            <span class="commission-fee-tag">抽成率 8%</span>
+          </div>
+          <div class="commission-row">
+            <span>委託人支付總額 (預存入信託專戶)：</span>
+            <span id="commPreviewTotal">NT$ 25,000</span>
+          </div>
+          <div class="commission-row" style="color: #92400E;">
+            <span>平台媒合技術服務費 (8%・開立發票)：</span>
+            <span id="commPreviewFee">- NT$ 2,000</span>
+          </div>
+          <div class="commission-row" style="color: #065F46;">
+            <span>專家實收（92%，試算）：</span>
+            <span id="commPreviewNet">NT$ 23,000</span>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">本案基地需求說明</label>
+          <textarea class="form-control" id="commNotes" rows="3"></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeModal('commissionModalBackdrop')">取消</button>
+        <button class="btn btn-accent" onclick="confirmCreateCommission()">
+          <i data-lucide="lock"></i> 確認（示範，不會實際收款）
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div id="toastContainer" style="position: fixed; bottom: 20px; right: 20px; z-index: 9999; display: flex; flex-direction: column; gap: 10px;"></div>
+
+  <footer class="no-print" style="background: #0F172A; color: #94A3B8; padding: 2rem 0; font-size: 0.84rem; border-top: 1px solid rgba(255,255,255,0.08); text-align: center;">
+    <div class="container">
+      <p style="color: #F8FAFC; font-weight: 700; margin-bottom: 0.4rem;">政務通 ProMatch - 智慧行政申辦與專家履約媒合商業平台</p>
+      <p>本頁為民間團隊製作之示範原型，非政府機關官方網站；不提供實際申報、收款或審查服務。各項審查結果以主管機關正式核發公文為準。</p>
+      <p style="margin-top: 0.4rem; font-size: 0.76rem; color: #64748B;">© 2026 ProMatch GovTech Platform. All Rights Reserved.</p>
+    </div>
+  </footer>
+
+  <script>
+/**
+ * 政務通 ProMatch - 智慧行政申辦與專家履約媒合商業平台
+ * Universal Domain Architecture & Commercial Commission Engine
+ * 嚴格遵循《水土保持計畫審核監督辦法》(含本辦法所需書、表、文件格式)
+ */
+
+// 平台商業模式參數
+const COMMISSION_RATE = 0.08; // 平台抽成率 8%（商業模式假設，示範用）
+
+// ---- 共用小工具 ----
+function esc(v) {
+  return String(v == null ? '' : v).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+// 西元 YYYY-MM-DD → 民國 YYY 年 M 月 D 日
+function toROC(iso) {
+  const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(iso || '');
+  if (!m) return '＿＿年＿＿月＿＿日';
+  return `${Number(m[1]) - 1911} 年 ${Number(m[2])} 月 ${Number(m[3])} 日`;
+}
+function daysBetween(a, b) {
+  const x = new Date(a), y = new Date(b);
+  if (isNaN(x) || isNaN(y)) return null;
+  return Math.round((y - x) / 86400000);
+}
+const BLANK = '＿＿＿＿＿＿';
+
+const APP_STATE = {
+  currentDomain: 'soil_care', // 'soil_care', 'building_permit', 'sewage_connection'
+  activeStatutoryDoc: 'declaration', // 'declaration', 'commencement', 'completion', 'checklist', 'dossier'
+  currentStep: 1,
+  activeTab: 'wizard',
+  theme: 'light'
+};
+
+// ==========================================
+// 1. Universal Domain Registry
+// ==========================================
+
+const DOMAIN_REGISTRY = {
+  soil_care: {
+    id: 'soil_care',
+    name: '水土保持申報',
+    icon: 'sprout',
+    badge: '🌿 水土保持申報 (依審核監督辦法)',
+    heroTitle: '山坡地水土保持申報<br><span class="hero-highlight">民眾小白通關・專家履約媒合</span>',
+    heroSubtitle: '依《水土保持計畫審核監督辦法》第三條先做規模快篩，再套入參考主管機關公布版式的「簡易水土保持申報書」與「簡易水土保持處理完工申報書」，並可預覽媒合水保技師與代書、履約款項託管流程（示範）。',
+    authority: '農業部農村發展及水土保持署 / 直轄市、縣(市)主管機關',
+    roles: [
+      { key: 'all', label: '全部專業人員' },
+      { key: 'water', label: '水土保持技師' },
+      { key: 'civil', label: '土木 / 大地技師' },
+      { key: 'scrivener', label: '地政士 (土地代書)' }
+    ],
+    docSample: '投府農水字第 1130098231 號',
+    services: [
+      '簡易水保圖說繪製與套繪 ($18,000 ~ $25,000)',
+      '全套簡易水保代辦至主管機關核准 ($35,000 ~ $50,000)',
+      '無人機空拍地形測量與現況調查 ($15,000)'
+    ]
+  },
+  building_permit: {
+    id: 'building_permit',
+    name: '建造與使用執照',
+    icon: 'building-2',
+    badge: '🏗️ 建造與使用執照（示意）',
+    heroTitle: '自建農舍與建築建照申請<br><span class="hero-highlight">法規快篩分流・建築師履約媒合</span>',
+    heroSubtitle: '依據《建築法》與建築技術規則，引導一般民眾判定基地建蔽率、容積率、指定建築線與開工查驗規範，一鍵產出建管送審檢核清冊，媒合開業建築師與跑單主任，（示意，功能開發中）',
+    authority: '內政部國土管理署 / 各直轄市、縣(市)政府都市發展局建管科',
+    roles: [
+      { key: 'all', label: '全部專業人員' },
+      { key: 'architect', label: '開業建築師' },
+      { key: 'structural', label: '結構工程技師' },
+      { key: 'scrivener', label: '地政士 (產權測繪)' }
+    ],
+    docSample: '(113)中都建字第 01248 號',
+    services: [
+      '自地自建農舍/透天建照全案規劃審查 ($60,000 ~ $120,000)',
+      '使用執照竣工查驗與代辦跑件 ($35,000 ~ $60,000)',
+      '免照雜項工作物建築線指定圖審 ($20,000)'
+    ]
+  },
+  sewage_connection: {
+    id: 'sewage_connection',
+    name: '污水用戶接管審查',
+    icon: 'droplets',
+    badge: '💧 污水用戶接管審查（示意）',
+    heroTitle: '污水下水道用戶排水設備<br><span class="hero-highlight">智慧圖審試算・合格承裝商履約</span>',
+    heroSubtitle: '依據《下水道法》與用戶排水設備標準，輔導社區管委會及自建透天厝判定排水分區、排放管徑與油脂截留器規格，自動產製圖審申報書，直接媒合合格甲乙種下水道承裝商！',
+    authority: '直轄市、縣(市)政府水利局 / 工務局下水道工程處',
+    roles: [
+      { key: 'all', label: '全部專業人員' },
+      { key: 'sewer_contractor', label: '甲/乙種下水道承裝商' },
+      { key: 'plumbing', label: '甲級水電配管技工' },
+      { key: 'env_eng', label: '環境工程技師' }
+    ],
+    docSample: '北水衛下字第 113009412 號',
+    services: [
+      '用戶排水設備設計圖說繪製與送審 ($15,000 ~ $25,000)',
+      '老舊社區化糞池廢除與污水管改接全案 ($30,000 ~ $55,000)',
+      '透天住宅污水接管竣工勘驗代辦 ($12,000)'
+    ]
+  }
+};
+
+// ==========================================
+// 2. Multi-Domain Experts Database
+// ==========================================
+
+const EXPERTS_DB = [
+  {
+    id: 'exp-1',
+    name: '林昭明',
+    title: '水土保持技師',
+    role: 'water',
+    domains: ['soil_care'],
+    firm: '昭明水土保持技師事務所',
+    licenseNo: '水保技證字第 001248 號',
+    county: '南投縣',
+    serviceCounties: ['南投縣', '台中市', '彰化縣', '嘉義縣'],
+    rating: 4.95,
+    reviewCount: 38,
+    approvedCases: 42,
+    priceRange: '圖說 $18,000 / 全案 $38,000',
+    minPrice: 18000,
+    tags: ['南投水保服務團顧問', '茶園整坡專家', '無人機空拍套繪'],
+    bio: '執業逾12年，承辦山坡地簡易水保超過百件，熟悉審核監督辦法各項圖說要點，送件一次過件率極高。'
+  },
+  {
+    id: 'exp-2',
+    name: '張志豪',
+    title: '水土保持技師 / 土木技師',
+    role: 'water',
+    domains: ['soil_care'],
+    firm: '大自然工程技術顧問社',
+    licenseNo: '水保技證字第 001856 號',
+    county: '苗栗縣',
+    serviceCounties: ['苗栗縣', '新竹縣', '台中市'],
+    rating: 4.92,
+    reviewCount: 29,
+    approvedCases: 35,
+    priceRange: '圖說 $20,000 / 全案 $40,000',
+    minPrice: 20000,
+    tags: ['苗栗大湖農舍專精', '石籠擋土結構設計', '快速出圖'],
+    bio: '親自至現場踏勘測繪，使用高精度 RTK 航測建立地形圖，嚴格遵守技術規範。'
+  },
+  {
+    id: 'exp-arch-1',
+    name: '王立成',
+    title: '開業建築師',
+    role: 'architect',
+    domains: ['building_permit'],
+    firm: '立成聯合建築師事務所',
+    licenseNo: '建號第 003892 號 (開業字號：投府建字第018號)',
+    county: '南投縣',
+    serviceCounties: ['南投縣', '台中市', '彰化縣'],
+    rating: 4.96,
+    reviewCount: 41,
+    approvedCases: 48,
+    priceRange: '建照設計 $60,000 起 / 使照 $35,000',
+    minPrice: 60000,
+    tags: ['農舍自建專精', '現代綠建築', '熟悉建管規章'],
+    bio: '成功大學建築研究所碩士，專精自地自建休閒農舍、鋼構綠建築與老宅增修建照跑件。'
+  },
+  {
+    id: 'exp-sewer-1',
+    name: '李國強',
+    title: '甲種下水道承裝商 / 甲級水電技工',
+    role: 'sewer_contractor',
+    domains: ['sewage_connection'],
+    firm: '國強下水道衛生工程有限公司',
+    licenseNo: '下水道承裝字第 甲-001482 號',
+    county: '新北市',
+    serviceCounties: ['新北市', '台北市', '桃園市', '基隆市'],
+    rating: 4.93,
+    reviewCount: 52,
+    approvedCases: 65,
+    priceRange: '圖審 $15,000 / 改接改管 $32,000 起',
+    minPrice: 15000,
+    tags: ['下水道專案承裝', '化糞池廢除封填', '一次過驗'],
+    bio: '擁有25年下水道配管實務經驗，熟悉各區下水道主管高程與自設油脂截留槽標準。'
+  },
+  {
+    id: 'exp-3',
+    name: '陳美惠',
+    title: '開業地政士 (土地代書)',
+    role: 'scrivener',
+    domains: ['soil_care', 'building_permit'],
+    firm: '信賴地政士聯合事務所',
+    licenseNo: '北市地士字第 002135 號',
+    county: '宜蘭縣',
+    serviceCounties: ['宜蘭縣', '新北市', '花蓮縣'],
+    rating: 4.88,
+    reviewCount: 45,
+    approvedCases: 58,
+    priceRange: '代辦 $25,000 ~ $45,000',
+    minPrice: 25000,
+    tags: ['共有土地分割協調', '農用證明與水保建照整合', '親切耐心'],
+    bio: '專為農民處理農地繼承分割、產權清理及水保申報代辦一條龍服務。'
+  }
+];
+
+// ==========================================
+// 3. Escrow Orders with Commercial Split (平台抽成 8%)
+// ==========================================
+
+let ESCROW_ORDERS = [
+  {
+    id: 'case-101',
+    domain: 'soil_care',
+    caseTitle: '南投魚池五城段 0158地號 紅茶園整坡',
+    expertName: '林昭明',
+    expertRole: '水土保持技師',
+    serviceName: '簡易水保圖說繪製與送審輔導',
+    totalAmount: 25000,
+    platformFee: 2000,   // 8%
+    expertNet: 23000,     // 92%
+    status: 'LOCKED',
+    statusText: '款項已安全託管 (專戶凍結中)',
+    stepNumber: 3,
+    stepDesc: '技師已完成現地踏勘，向南投縣政府農業處掛號送件',
+    govDocNo: null,
+    date: '2026-08-15'
+  },
+  {
+    id: 'case-102',
+    domain: 'building_permit',
+    caseTitle: '南投埔里大湳段 自建農舍建造執照申請',
+    expertName: '王立成',
+    expertRole: '開業建築師',
+    serviceName: '自地自建農舍建照全案規劃審查',
+    totalAmount: 68000,
+    platformFee: 5440,   // 8%
+    expertNet: 62560,     // 92%
+    status: 'GOV_APPROVED',
+    statusText: '官方建照審查核准！待確認撥款',
+    stepNumber: 4,
+    stepDesc: '縣府建管處已核發建造執照號碼：(113)投都建字第 01248 號',
+    govDocNo: '(113)投都建字第 01248 號',
+    date: '2026-07-28'
+  },
+  {
+    id: 'case-103',
+    domain: 'sewage_connection',
+    caseTitle: '新北三峽大同路 透天住宅污水接管圖審與改接',
+    expertName: '李國強',
+    expertRole: '甲種下水道承裝商',
+    serviceName: '用戶排水設備圖審與化糞池廢除改接',
+    totalAmount: 35000,
+    platformFee: 2800,   // 8%
+    expertNet: 32200,     // 92%
+    status: 'RELEASED',
+    statusText: '已驗收撥款結案（示範）',
+    stepNumber: 5,
+    stepDesc: '新北市水利局竣工查驗合格證明：北水衛下字第 113009412 號，已淨撥付 NT$32,200 至承裝商帳戶',
+    govDocNo: '北水衛下字第 113009412 號',
+    date: '2026-06-10'
+  }
+];
+
+let VERIFIED_REVIEWS = [
+  {
+    id: 'rev-1',
+    domain: 'soil_care',
+    author: '王○慶 (南投仁愛鄉茶農)',
+    expertName: '林昭明 水土保持技師',
+    rating: 5.0,
+    govDocNo: '投府農水字第 1130012489 號',
+    docType: '南投縣政府水土保持審查核准函',
+    date: '2026-08-02',
+    content: '林技師非常專業！親自帶空拍機上山測量，幫我們規劃了非常順暢的截水溝與小沉砂池，送進縣府不到一個月就拿到核准函！而且平台金流先託管，等公文下來才扣除8%抽成撥款，雙方都超安心！'
+  },
+  {
+    id: 'rev-2',
+    domain: 'building_permit',
+    author: '林○宏 (南投埔里自建起造人)',
+    expertName: '王立成 開業建築師',
+    rating: 5.0,
+    govDocNo: '(113)投都建字第 01248 號',
+    docType: '南投縣政府都市發展局 建造執照',
+    date: '2026-08-10',
+    content: '王建築師對南投農舍法規非常精通，包含農用證明、地號套繪與排水分區一次過關。委託總額 6.8 萬先存在平台信託，建照執照下來由平台自動分潤撥款！'
+  }
+];
+
+// ==========================================
+// 4. Initialization
+// ==========================================
+
+document.addEventListener('DOMContentLoaded', () => {
+  try {
+    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+      document.body.setAttribute('data-theme', 'dark');
+    }
+  } catch (e) {}
+  if (window.lucide) lucide.createIcons();
+
+  applyDomainConfig(APP_STATE.currentDomain);
+  renderExpertsList();
+  renderEscrowOrders();
+  renderVerifiedReviews();
+  updatePlatformOperatorStats();
+  checkReviewUnlockState();
+});
+
+function switchDomain(domainKey) {
+  if (!DOMAIN_REGISTRY[domainKey]) return;
+  APP_STATE.currentDomain = domainKey;
+  document.body.setAttribute('data-domain', domainKey);
+
+  document.querySelectorAll('.domain-tab-btn').forEach(btn => btn.classList.remove('active'));
+  if (domainKey === 'soil_care') document.getElementById('tabDomainSoil').classList.add('active');
+  if (domainKey === 'building_permit') document.getElementById('tabDomainBuilding').classList.add('active');
+  if (domainKey === 'sewage_connection') document.getElementById('tabDomainSewage').classList.add('active');
+
+  applyDomainConfig(domainKey);
+  renderExpertsList();
+  renderEscrowOrders();
+  renderVerifiedReviews();
+  updateReviewCaseOptions();
+
+  showToast(`已切換至【${DOMAIN_REGISTRY[domainKey].name}】申報專區`, 'info');
+  if (window.lucide) lucide.createIcons();
+}
+
+function applyDomainConfig(domainKey) {
+  const cfg = DOMAIN_REGISTRY[domainKey];
+
+  const iconEl = document.getElementById('brandDomainIcon');
+  if (iconEl) iconEl.setAttribute('data-lucide', cfg.icon);
+  
+  const subTitle = document.getElementById('brandDomainSubtitle');
+  if (subTitle) subTitle.innerText = `智慧${cfg.name}與專家履約媒合商業平台`;
+
+  document.getElementById('heroTitle').innerHTML = cfg.heroTitle;
+  document.getElementById('heroSubtitle').innerText = cfg.heroSubtitle;
+
+  renderStep1Fields(domainKey);
+  renderStep3Facilities(domainKey);
+  renderStep4Drawings(domainKey);
+  syncDataToPrintDossier();
+
+  const roleSelect = document.getElementById('filterRole');
+  if (roleSelect) {
+    roleSelect.innerHTML = cfg.roles.map(r => `<option value="${r.key}">${r.label}</option>`).join('');
+  }
+
+  const lblDoc = document.getElementById('lblGovDocInput');
+  if (lblDoc) lblDoc.innerText = `官方核准公文函號 / 執照字號 (例：${cfg.docSample}) *`;
+
+  if (window.lucide) lucide.createIcons();
+}
+
+// ==========================================
+// 5. Dynamic Wizard Renderers
+// ==========================================
+
+function renderStep1Fields(domainKey) {
+  const container = document.getElementById('step1DynamicFields');
+  if (!container) return;
+
+  if (domainKey === 'soil_care') {
+    container.innerHTML = `
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">實施地點是否位於山坡地或森林區？ <span class="required">*</span></label>
+          <select class="form-control" id="inHillside" onchange="evaluateRegulations()">
+            <option value="yes" selected>是（山坡地或森林區）</option>
+            <option value="unknown">不確定（請先向主管機關或地政資料確認）</option>
+            <option value="no">否（非山坡地、非森林區）</option>
+          </select>
+          <small style="color: var(--text-muted);">簡易水土保持申報書的適用範圍為「山坡地或森林區內」（辦法第三條）。</small>
+        </div>
+        <div class="form-group">
+          <label class="form-label">開發／利用類別（對應辦法第三條各款） <span class="required">*</span></label>
+          <select class="form-control" id="projectType" onchange="evaluateRegulations()">
+            <option value="land_improvement">農、林、漁、牧地之整坡作業（第二款）</option>
+            <option value="agri_facility">農業生產／林業經營／養畜養禽等設施之開發建築用地（第八款）</option>
+            <option value="farm_road">農、林、漁、牧地開發利用所需之修築農路（第一款）</option>
+            <option value="other_building">前款以外之開發建築用地（第九款）</option>
+            <option value="park_grave_sport">設置公園、墳墓、運動場地（第十款）</option>
+            <option value="stockpile">堆積土石（第十一款）</option>
+            <option value="other_excavation">其他開挖整地（含邊坡整治、擋土牆修繕等，第十二款）</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row-3">
+        <div class="form-group" id="grpArea">
+          <label class="form-label" id="lblArea">開挖整地面積 (平方公尺) <span class="required">*</span></label>
+          <input type="number" min="0" class="form-control" id="excavationArea" value="1200" oninput="evaluateRegulations()">
+          <small style="color: var(--text-muted);" id="areaHint"></small>
+        </div>
+        <div class="form-group" id="grpRoadW" style="display:none;">
+          <label class="form-label">農路路基寬度 (公尺)</label>
+          <input type="number" min="0" step="0.1" class="form-control" id="roadWidth" value="3" oninput="evaluateRegulations()">
+          <small style="color: var(--text-muted);">須未滿 4 公尺</small>
+        </div>
+        <div class="form-group" id="grpRoadL" style="display:none;">
+          <label class="form-label">農路長度 (公尺)</label>
+          <input type="number" min="0" class="form-control" id="roadLength" value="300" oninput="evaluateRegulations()">
+          <small style="color: var(--text-muted);">須未滿 500 公尺</small>
+        </div>
+        <div class="form-group">
+          <label class="form-label">挖方數量 (立方公尺) <span class="required">*</span></label>
+          <input type="number" min="0" class="form-control" id="earthCut" value="900" oninput="evaluateRegulations()">
+        </div>
+        <div class="form-group">
+          <label class="form-label">填方數量 (立方公尺) <span class="required">*</span></label>
+          <input type="number" min="0" class="form-control" id="earthFill" value="700" oninput="evaluateRegulations()">
+          <small style="color: var(--text-muted);">挖方＋填方合計（或堆積土石方）須未滿 2,000 m³</small>
+        </div>
+      </div>
+    `;
+  } else if (domainKey === 'building_permit') {
+    container.innerHTML = `
+      <div class="form-group">
+        <label class="form-label">建造執照申請類別 <span class="required">*</span></label>
+        <select class="form-control" id="projectType" onchange="evaluateRegulations()">
+          <option value="farm_house">山坡地/農牧用地自建農舍（依農舍審查要點）</option>
+          <option value="single_residence">自用獨棟透天住宅新建工程</option>
+        </select>
+      </div>
+      <div class="form-row-3">
+        <div class="form-group">
+          <label class="form-label">預計總樓地板面積 (平方公尺) <span class="required">*</span></label>
+          <input type="number" class="form-control" id="excavationArea" value="330" oninput="evaluateRegulations()">
+        </div>
+        <div class="form-group">
+          <label class="form-label">建築地上層數 (樓)</label>
+          <input type="number" class="form-control" id="earthCut" value="3" oninput="evaluateRegulations()">
+        </div>
+        <div class="form-group">
+          <label class="form-label">構造種類</label>
+          <select class="form-control" id="buildingStructure">
+            <option value="RC">鋼筋混凝土造 (RC)</option>
+            <option value="SC">鋼骨造 (SC)</option>
+          </select>
+        </div>
+      </div>
+    `;
+  } else if (domainKey === 'sewage_connection') {
+    container.innerHTML = `
+      <div class="form-group">
+        <label class="form-label">污水排水設備接管性質 <span class="required">*</span></label>
+        <select class="form-control" id="projectType" onchange="evaluateRegulations()">
+          <option value="residence_connect">自用透天住宅改接市區公共下水道</option>
+          <option value="community_retrofit">社區化糞池廢除自管改接工程</option>
+        </select>
+      </div>
+      <div class="form-row-3">
+        <div class="form-group">
+          <label class="form-label">排水戶數 (戶)</label>
+          <input type="number" class="form-control" id="excavationArea" value="1">
+        </div>
+        <div class="form-group">
+          <label class="form-label">連通管徑 (mm)</label>
+          <select class="form-control" id="earthCut">
+            <option value="100">100 mm (標準接管口徑)</option>
+            <option value="150">150 mm</option>
+          </select>
+        </div>
+      </div>
+    `;
+  }
+
+  evaluateRegulations();
+}
+
+function renderStep3Facilities(domainKey) {
+  const container = document.getElementById('step3FacilitiesContainer');
+  if (!container) return;
+
+  if (domainKey === 'soil_care') {
+    container.innerHTML = `
+      <label class="form-label">水土保持處理與維護設施規劃明細（符合技術規範標準） <span class="required">*</span></label>
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem;">
+        <div style="background: var(--surface-subtle); padding: 1rem; border-radius: var(--radius-md); border: 1px solid var(--surface-border);">
+          <label style="font-weight: 700; display: flex; align-items: center; gap: 0.5rem;">
+            <input type="checkbox" id="fac_drain" checked> 1. 排水設施 (截排水溝/過路涵管)
+          </label>
+          <input type="text" class="form-control" id="fac_drain_spec" value="RC U型溝 (內寬30cm×深30cm)，總長 145 公尺" style="margin-top: 0.4rem;">
+        </div>
+        <div style="background: var(--surface-subtle); padding: 1rem; border-radius: var(--radius-md); border: 1px solid var(--surface-border);">
+          <label style="font-weight: 700; display: flex; align-items: center; gap: 0.5rem;">
+            <input type="checkbox" id="fac_sediment" checked> 2. 沉砂設施 (臨時沉砂池/滯洪)
+          </label>
+          <input type="text" class="form-control" id="fac_sediment_spec" value="梯形沉砂池襯砌不透水布，容量 45 立方公尺" style="margin-top: 0.4rem;">
+        </div>
+        <div style="background: var(--surface-subtle); padding: 1rem; border-radius: var(--radius-md); border: 1px solid var(--surface-border);">
+          <label style="font-weight: 700; display: flex; align-items: center; gap: 0.5rem;">
+            <input type="checkbox" id="fac_wall" checked> 3. 擋土結構 (擋土牆/石籠護坡)
+          </label>
+          <input type="text" class="form-control" id="fac_wall_spec" value="重力式石籠擋土牆，高度 2.0 公尺，長度 35 公尺" style="margin-top: 0.4rem;">
+        </div>
+        <div style="background: var(--surface-subtle); padding: 1rem; border-radius: var(--radius-md); border: 1px solid var(--surface-border);">
+          <label style="font-weight: 700; display: flex; align-items: center; gap: 0.5rem;">
+            <input type="checkbox" id="fac_cover" checked> 4. 植生敷蓋 (邊坡綠化/防塵防沖蝕)
+          </label>
+          <input type="text" class="form-control" id="fac_cover_spec" value="噴植類地毯草敷蓋，面積 650 平方公尺" style="margin-top: 0.4rem;">
+        </div>
+      </div>
+    `;
+  } else {
+    container.innerHTML = `
+      <label class="form-label">設施與設備規格明細 <span class="required">*</span></label>
+      <input type="text" class="form-control" id="fac_drain_spec" value="標準排水分區與安全設施配置">
+    `;
+  }
+}
+
+function renderStep4Drawings(domainKey) {
+  const container = document.getElementById('step4DrawingsContainer');
+  if (!container) return;
+
+  if (domainKey === 'soil_care') {
+    container.innerHTML = `
+      <div style="margin-bottom: 1rem; padding: 1.25rem; border: 1px solid var(--surface-border); border-radius: var(--radius-lg);">
+        <h4 style="font-weight: 700;">1. 實施地點土地位置圖與現況相片</h4>
+        <p style="font-size: 0.82rem; color: var(--text-muted);">套繪二萬五千分之一相片基本圖，並檢附施工前現況全景彩色相片（東南西北視角各1張）。</p>
+        <div class="upload-dropzone" onclick="simulateFileUpload('dwg1')"><i data-lucide="camera"></i> 點擊上傳現況相片組 (JPG/PDF)</div>
+      </div>
+      <div style="margin-bottom: 1rem; padding: 1.25rem; border: 1px solid var(--surface-border); border-radius: var(--radius-lg);">
+        <h4 style="font-weight: 700;">2. 水土保持設施平面配置圖 (含地籍套繪)</h4>
+        <p style="font-size: 0.82rem; color: var(--text-muted);">需標註開挖整地界線、地籍地號、排水動向、沉砂池與臨時防災設施位置。</p>
+        <div class="upload-dropzone" onclick="simulateFileUpload('dwg2')"><i data-lucide="file-image"></i> 點擊上傳平面配置圖 (DWG/PDF)</div>
+      </div>
+      <div style="margin-bottom: 1rem; padding: 1.25rem; border: 1px solid var(--surface-border); border-radius: var(--radius-lg);">
+        <h4 style="font-weight: 700;">3. 水土保持構造物標準斷面示意圖</h4>
+        <p style="font-size: 0.82rem; color: var(--text-muted);">包含排水溝斷面尺寸、沉砂池容量構造與擋土牆剖面尺寸圖。</p>
+        <div class="upload-dropzone" onclick="simulateFileUpload('dwg3')"><i data-lucide="file-code"></i> 點擊上傳構造物標準圖 (PDF)</div>
+      </div>
+    `;
+  } else {
+    container.innerHTML = `
+      <div style="margin-bottom: 1rem; padding: 1.25rem; border: 1px solid var(--surface-border); border-radius: var(--radius-lg);">
+        <h4 style="font-weight: 700;">1. 專業設計圖說 (需合格執業人員簽證)</h4>
+        <div class="upload-dropzone" onclick="simulateFileUpload('dwg1')"><i data-lucide="file-code"></i> 點擊上傳設計圖說 (PDF/DWG)</div>
+      </div>
+    `;
+  }
+}
+
+// ==========================================
+// 6. Statutory Law Evaluation
+// ==========================================
+
+// 辦法第三條各款：面積型門檻（單位 m²）
+const SOIL_AREA_RULES = {
+  land_improvement: { max: 10000, label: '開挖整地面積', hint: '第二款：整坡作業，開挖整地面積須未滿 1 公頃（10,000 m²）' },
+  agri_facility:    { max: 10000, label: '建築面積及其他開挖整地面積合計', hint: '第八款：建築面積及其他開挖整地面積合計須未滿 1 公頃（10,000 m²）' },
+  other_building:   { max: 500,   label: '建築面積及其他開挖整地面積合計', hint: '第九款：合計須未滿 500 m²' },
+  park_grave_sport: { max: 1000,  label: '開挖整地面積', hint: '第十款：開挖整地面積須未滿 1,000 m²' },
+  other_excavation: { max: 1000,  label: '開挖整地面積', hint: '第十二款：開挖整地面積須未滿 1,000 m²' },
+  stockpile:        { max: null,  label: '', hint: '第十一款：堆積土石，僅受土石方未滿 2,000 m³ 之總量限制' },
+  farm_road:        { max: null,  label: '', hint: '第一款：路基寬度未滿 4 公尺且長度未滿 500 公尺' }
+};
+
+function evaluateRegulations() {
+  const domainKey = APP_STATE.currentDomain;
+  const evalBox = document.getElementById('lawEvalResult');
+  const evalTitle = document.getElementById('evalTitle');
+  const evalDesc = document.getElementById('evalDesc');
+  const evalTags = document.getElementById('evalTags');
+  const icon = evalBox ? evalBox.querySelector('.eval-icon') : null;
+  if (!evalBox) return;
+
+  if (domainKey !== 'soil_care') {
+    evalBox.className = 'law-eval-box type-plan';
+    if (icon) icon.textContent = '🚧';
+    evalTitle.innerText = '此業務領域的法規判定引擎尚未建置（僅為介面示意）';
+    evalDesc.innerHTML = '目前只有「水土保持申報」具備依法規條文的快篩邏輯與書表；建造執照、污水接管需另行依《建築法》、《下水道法》及各縣市規定逐項建置，請勿據此判斷申辦資格。';
+    evalTags.innerHTML = '<span class="badge badge-amber">開發中・示意</span>';
+    return;
+  }
+
+  const num = id => parseFloat(document.getElementById(id)?.value) || 0;
+  const hill = document.getElementById('inHillside')?.value || 'yes';
+  const type = document.getElementById('projectType')?.value || 'land_improvement';
+  const rule = SOIL_AREA_RULES[type];
+  const area = num('excavationArea');
+  const cut = num('earthCut');
+  const fill = num('earthFill');
+  const totalEarth = cut + fill;
+
+  // 切換欄位顯示
+  const showRoad = type === 'farm_road';
+  const showArea = !showRoad && type !== 'stockpile';
+  const setDisp = (id, on) => { const el = document.getElementById(id); if (el) el.style.display = on ? '' : 'none'; };
+  setDisp('grpRoadW', showRoad); setDisp('grpRoadL', showRoad); setDisp('grpArea', showArea);
+  const lblArea = document.getElementById('lblArea');
+  if (lblArea && rule.label) lblArea.innerHTML = rule.label + ' (平方公尺) <span class="required">*</span>';
+  const areaHint = document.getElementById('areaHint');
+  if (areaHint) areaHint.textContent = rule.hint;
+
+  // 1) 是否在適用範圍
+  if (hill === 'no') {
+    evalBox.className = 'law-eval-box type-plan';
+    if (icon) icon.textContent = 'ℹ️';
+    evalTitle.innerText = '非山坡地、非森林區：不適用簡易水土保持申報書';
+    evalDesc.innerHTML = '水土保持法第十二條及辦法第三條所稱之申報／計畫制度，以山坡地或森林區為範圍。本案是否仍須依其他法令（如水利、建管、農業用地等）辦理，請洽當地主管機關確認。';
+    evalTags.innerHTML = '<span class="badge badge-blue">請洽主管機關確認</span>';
+    return;
+  }
+
+  // 2) 規模判定
+  const fails = [];
+  if (showRoad) {
+    const w = num('roadWidth'), l = num('roadLength');
+    if (!(w < 4)) fails.push(`農路路基寬度 ${w} 公尺（須未滿 4 公尺）`);
+    if (!(l < 500)) fails.push(`農路長度 ${l.toLocaleString()} 公尺（須未滿 500 公尺）`);
+  } else if (rule.max != null && !(area < rule.max)) {
+    fails.push(`${rule.label} ${area.toLocaleString()} m²（須未滿 ${rule.max.toLocaleString()} m²）`);
+  }
+  if (!(totalEarth < 2000)) fails.push(`挖填合計 ${totalEarth.toLocaleString()} m³（須未滿 2,000 m³）`);
+
+  if (fails.length === 0) {
+    evalBox.className = 'law-eval-box type-simple';
+    if (icon) icon.textContent = '✅';
+    evalTitle.innerText = '初步試算：規模落在辦法第三條得以簡易水土保持申報書代替之範圍';
+    evalDesc.innerHTML = `
+      類別：${esc(rule.hint.split('：')[0])}；挖填合計 <strong>${totalEarth.toLocaleString()}</strong> m³（未滿 2,000 m³）。<br>
+      <strong>此為依條文之初步試算，非主管機關之審查結論。</strong>${hill === 'unknown' ? '<br>⚠️ 您尚未確認是否位於山坡地／森林區，請先確認。' : ''}
+      實際仍須以主管機關認定為準（例如是否須先取得目的事業主管機關許可、是否為多項行為合併計算等）。
+    `;
+    evalTags.innerHTML = '<span class="badge badge-green">得擬具簡易水土保持申報書</span><span class="badge badge-blue">初步試算・以主管機關認定為準</span>';
+  } else {
+    evalBox.className = 'law-eval-box type-plan';
+    if (icon) icon.textContent = '⚠️';
+    evalTitle.innerText = '初步試算：已超出簡易申報範圍，通常需擬具「水土保持計畫」';
+    evalDesc.innerHTML = `
+      未符合之項目：<br>• ${fails.map(esc).join('<br>• ')}<br>
+      水土保持計畫通常須委由專業技師規劃並簽證，可至「專家市集」預覽媒合流程。此為初步試算，請以主管機關認定為準。
+    `;
+    evalTags.innerHTML = '<span class="badge badge-amber">可能需擬具水土保持計畫</span><span class="badge badge-amber">通常需技師簽證</span>';
+  }
+}
+
+// ==========================================
+// 7. Navigation & Stepper Control
+// ==========================================
+
+function switchTab(tabId) {
+  APP_STATE.activeTab = tabId;
+  document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+  const activeNav = document.getElementById(`nav-${tabId}`);
+  if (activeNav) activeNav.classList.add('active');
+
+  document.querySelectorAll('.tab-content-panel').forEach(panel => panel.classList.remove('active'));
+  const targetPanel = document.getElementById(`${tabId}Panel`);
+  if (targetPanel) targetPanel.classList.add('active');
+
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  if (window.lucide) lucide.createIcons();
+}
+
+function goToStep(stepNumber) {
+  if (stepNumber < 1 || stepNumber > 5) return;
+  APP_STATE.currentStep = stepNumber;
+
+  for (let i = 1; i <= 5; i++) {
+    const indicator = document.getElementById(`stepIndicator${i}`);
+    const pane = document.getElementById(`step${i}`);
+    indicator.classList.remove('active', 'completed');
+    pane.classList.remove('active');
+
+    if (i === stepNumber) {
+      indicator.classList.add('active');
+      pane.classList.add('active');
+    } else if (i < stepNumber) {
+      indicator.classList.add('completed');
+    }
+  }
+
+  const prevBtn = document.getElementById('btnPrevStep');
+  const nextBtn = document.getElementById('btnNextStep');
+  prevBtn.style.visibility = stepNumber === 1 ? 'hidden' : 'visible';
+  document.getElementById('stepCounterText').innerText = `步驟 ${stepNumber} / 5`;
+
+  if (stepNumber === 5) {
+    nextBtn.innerHTML = '<i data-lucide="printer"></i> 列印目前書表';
+    syncDataToPrintDossier();
+  } else {
+    nextBtn.innerHTML = '下一步 <i data-lucide="arrow-right"></i>';
+  }
+
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  if (window.lucide) lucide.createIcons();
+}
+
+function navigateStep(delta) {
+  if (delta > 0 && APP_STATE.currentStep === 5) { triggerPrint(); return; }
+  goToStep(APP_STATE.currentStep + delta);
+}
+
+// ==========================================
+// 8. 《水土保持計畫審核監督辦法》法定格式輸出引擎
+// ==========================================
+
+function switchStatutoryDoc(docType) {
+  APP_STATE.activeStatutoryDoc = docType;
+
+  // Update button active state
+  document.querySelectorAll('.statutory-tab-btn').forEach(btn => btn.classList.remove('active'));
+  if (docType === 'declaration') document.getElementById('btnDocDecl').classList.add('active');
+  if (docType === 'commencement') document.getElementById('btnDocCommence').classList.add('active');
+  if (docType === 'completion') document.getElementById('btnDocComplete').classList.add('active');
+  if (docType === 'checklist') document.getElementById('btnDocCheck').classList.add('active');
+  const ov = document.getElementById('btnDocAll');
+  if (ov && docType === 'dossier') ov.classList.add('active');
+
+  syncDataToPrintDossier();
+  showToast('已切換公文表單格式！', 'info');
+}
+
+function syncDataToPrintDossier() {
+  const container = document.getElementById('printContainer');
+  if (!container) return;
+
+  const docType = APP_STATE.activeStatutoryDoc;
+  if (APP_STATE.currentDomain !== 'soil_care') {
+    container.innerHTML = '<div style="padding:2rem;text-align:center;font-family:var(--font-base);">🚧 目前僅「水土保持申報」提供書表預覽。建造執照與污水接管的送審書表尚未建置，請切換至水土保持領域。</div>';
+    return;
+  }
+  const d = getFormData();
+
+  if (docType === 'declaration') {
+    container.innerHTML = generateStatutoryDeclarationHTML(d);
+  } else if (docType === 'commencement') {
+    container.innerHTML = generateStatutoryCommencementHTML(d);
+  } else if (docType === 'completion') {
+    container.innerHTML = generateStatutoryCompletionHTML(d);
+  } else if (docType === 'checklist') {
+    container.innerHTML = generateStatutoryChecklistHTML(d);
+  } else if (docType === 'dossier') {
+    container.innerHTML = generateCompleteDossierHTML(d);
+  }
+}
+
+function getFormData() {
+  const v = (id, fb = '') => {
+    const el = document.getElementById(id);
+    const s = el ? String(el.value).trim() : '';
+    return esc(s || fb);
+  };
+  const applicant = v('applicantName', BLANK);
+  const idNo = v('applicantId', BLANK);
+  const phone = v('applicantPhone', BLANK);
+  const addr = v('applicantAddress', BLANK);
+  const agentName = v('agentName', '無');
+  const agentPhone = v('agentPhone', '無');
+
+  const county = v('landCounty', BLANK);
+  const district = v('landDistrict', '');
+  const lot = v('landLotNo', BLANK);
+  const totalArea = v('landTotalArea', '0');
+  const zone = v('landZone', BLANK);
+  const ownership = v('landOwnership', BLANK);
+
+  const area = v('excavationArea', '0');
+  const cut = v('earthCut', '0');
+  const fill = v('earthFill', '0');
+  const totalEarth = (Number(cut) || 0) + (Number(fill) || 0);
+  const duration = v('projectDuration', '0');
+  const startRaw = document.getElementById('projectStartDate')?.value || '';
+  const endRaw = document.getElementById('projectEndDate')?.value || '';
+  const startDate = toROC(startRaw);
+  const endDate = toROC(endRaw);
+  const spanDays = daysBetween(startRaw, endRaw);
+
+  const typeSelect = document.getElementById('projectType');
+  const typeText = esc(typeSelect ? typeSelect.options[typeSelect.selectedIndex].text : BLANK);
+  const benefit = v('projectBenefit', '');
+
+  const chk = (id) => document.getElementById(id) ? document.getElementById(id).checked : true;
+  const facDrain = chk('fac_drain') ? v('fac_drain_spec', '（未填）') : '（不設置）';
+  const facSediment = chk('fac_sediment') ? v('fac_sediment_spec', '（未填）') : '（不設置）';
+  const facWall = chk('fac_wall') ? v('fac_wall_spec', '（未填）') : '（不設置）';
+  const facCover = chk('fac_cover') ? v('fac_cover_spec', '（未填）') : '（不設置）';
+
+  return {
+    applicant, idNo, phone, addr, agentName, agentPhone,
+    county, district, lot, totalArea, zone, ownership,
+    area, cut, fill, totalEarth, duration, startDate, endDate, spanDays,
+    typeText, benefit, facDrain, facSediment, facWall, facCover
+  };
+}
+
+/**
+ * 依《水土保持計畫審核監督辦法》附表三：簡易水土保持申報書 (法定格式全表)
+ */
+function generateStatutoryDeclarationHTML(d) {
+  return `
+    <div class="print-gov-header">
+      <span class="annex-tag">參考版式：農村水保署公布「簡易水土保持申報書」（官網表單 016）</span>
+      <div class="gov-top-line">${d.county}（主管機關）/ 目的事業主管機關</div>
+      <h2>簡易水土保持申報書</h2>
+      <div class="law-cite">依水土保持法第十二條及水土保持計畫審核監督辦法第三條規定擬具（正式送件請改用主管機關最新公布表單）</div>
+    </div>
+
+    <table class="official-table">
+      <tbody>
+        <tr>
+          <th style="width: 22%;">受文機關</th>
+          <td colspan="3"><strong>${d.county}</strong>（實際受理窗口依縣市及目的事業別而定，請洽確認）</td>
+        </tr>
+        <tr>
+          <th>水土保持義務人<br>(申請人)</th>
+          <td style="width: 28%;"><strong>${d.applicant}</strong></td>
+          <th style="width: 22%;">國民身分證統一編號<br>(營利事業統一編號)</th>
+          <td style="width: 28%; font-family: monospace;">${d.idNo}</td>
+        </tr>
+        <tr>
+          <th>聯絡電話</th>
+          <td>${d.phone}</td>
+          <th>戶籍地/通訊住址</th>
+          <td>${d.addr}</td>
+        </tr>
+        <tr>
+          <th>受任代理人</th>
+          <td>${d.agentName}</td>
+          <th>代理人電話及字號</th>
+          <td>${d.agentPhone}</td>
+        </tr>
+        <tr>
+          <th>實施地點土地座落</th>
+          <td colspan="3">
+            <strong>${d.district}${d.lot}</strong>（基地總面積：${(Number(d.totalArea) || 0).toLocaleString()} 平方公尺）
+          </td>
+        </tr>
+        <tr>
+          <th>使用分區與類別</th>
+          <td>${d.zone}</td>
+          <th>土地權利證明</th>
+          <td>${d.ownership}（檢附土地登記第一類謄本及地籍圖）</td>
+        </tr>
+        <tr>
+          <th>開發目的與種類</th>
+          <td colspan="3">
+            <strong>${d.typeText}</strong>（是否合於辦法第三條規模，以主管機關審查認定為準）
+          </td>
+        </tr>
+        <tr>
+          <th>開挖整地面積</th>
+          <td><strong>${(Number(d.area) || 0).toLocaleString()}</strong> 平方公尺</td>
+          <th>預計施工期限</th>
+          <td><strong>${d.duration}</strong> 個月</td>
+        </tr>
+        <tr>
+          <th>挖填土石方數量</th>
+          <td colspan="3">
+            挖方量：<strong>${Number(d.cut).toLocaleString()}</strong> 立方公尺 ｜ 
+            填方量：<strong>${Number(d.fill).toLocaleString()}</strong> 立方公尺 ｜ 
+            <strong>挖填總量：${Number(d.totalEarth).toLocaleString()} 立方公尺</strong>
+          </td>
+        </tr>
+        <tr>
+          <th>實施水土保持處理與維護設施規劃明細</th>
+          <td colspan="3">
+            <ul style="margin-left: 1.25rem; font-size: 0.9rem; line-height: 1.7;">
+              <li><strong>1. 排水設施：</strong>${d.facDrain}</li>
+              <li><strong>2. 沉砂及滯洪設施：</strong>${d.facSediment}</li>
+              <li><strong>3. 擋土與邊坡支撐結構：</strong>${d.facWall}</li>
+              <li><strong>4. 植生敷蓋與防災措施：</strong>${d.facCover}</li>
+            </ul>
+          </td>
+        </tr>
+        <tr>
+          <th>檢附書圖文件清冊<br>(請依主管機關公告核對)</th>
+          <td colspan="3" style="font-size: 0.88rem; line-height: 1.6;">
+            ☑ 1. 水土保持義務人國民身分證正反面影本<br>
+            ☑ 2. 實施地點最近一個月內土地登記第一類謄本及地籍圖謄本<br>
+            ☑ 3. 土地使用權同意書（申請人非土地單獨所有權人者適用）<br>
+            ☑ 4. 實施地點土地位置圖（套繪像片基本圖）<br>
+            ☑ 5. 水土保持設施平面配置圖（載明開挖界線、截水溝走向與沉砂池位址）<br>
+            ☑ 6. 構造物標準斷面示意圖<br>
+            ☑ 7. 基地現況全景彩色照片（東、南、西、北四視角）
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="official-declaration-text">
+      <strong>具結聲明：</strong> 本水土保持義務人茲保證以上申報事項及所附圖說文件均屬真實無訛，並恪遵《水土保持法》、《水土保持計畫審核監督辦法》及《水土保持技術規範》施工。施工期間善盡自主維護管理之責，絕不超挖濫墾、不阻礙天然水路；若有違反水土保持法各項規定，願受主管機關依水土保持法第三十三條等規定處理（包括限期改正、停工，並處新臺幣六萬元以上三十萬元以下罰鍰；致生水土流失者並涉刑責）。
+    </div>
+
+    <div class="official-signatures-grid">
+      <div class="official-sig-box">
+        <div class="official-sig-title">水土保持義務人 (具結人) 簽名蓋章處</div>
+        <div style="text-align: center; color: #555; font-size: 0.88rem; margin: 1.5rem 0;">
+          （請義務人親自署名並加蓋印鑑私章）
+        </div>
+        <div style="font-size: 0.82rem; text-align: right;">
+          申報日期：民國 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 年 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 月 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 日
+        </div>
+      </div>
+      <div class="official-sig-box">
+        <div class="official-sig-title">主管審查機關 收件文號與條碼欄</div>
+        <div style="font-size: 0.85rem; color: #555; line-height: 1.8;">
+          收件日期：民國 &nbsp;&nbsp;&nbsp;&nbsp; 年 &nbsp;&nbsp;&nbsp;&nbsp; 月 &nbsp;&nbsp;&nbsp;&nbsp; 日<br>
+          收文字號：<br>
+          承辦收件人員簽章：
+        </div>
+      </div>
+    </div>
+
+    <!-- 主管機關法定審核意見欄 -->
+    <div class="official-agency-review-box">
+      <div class="box-title">主管機關審核意見及核定欄（本欄由審查機關填寫）</div>
+      <table class="official-table" style="margin-bottom: 0;">
+        <tbody>
+          <tr>
+            <th style="width: 25%;">審核項目</th>
+            <td colspan="3" style="font-size: 0.88rem;">
+              □ 1. 檢附書件與證明文件齊全。<br>
+              □ 2. 開發規模符合《水土保持計畫審核監督辦法》第三條簡易申報門檻。<br>
+              □ 3. 水土保持設施配置與數量合於水土保持技術規範。
+            </td>
+          </tr>
+          <tr>
+            <th>審核結論</th>
+            <td colspan="3" style="font-size: 0.92rem;">
+              □ 符合規定准予核定 ｜ □ 應予補正（通知補正） ｜ □ 不符合規定
+            </td>
+          </tr>
+          <tr>
+            <th>核定公文字號</th>
+            <td>&nbsp;</td>
+            <th>核定日期</th>
+            <td>民國 &nbsp;&nbsp;&nbsp;&nbsp; 年 &nbsp;&nbsp;&nbsp;&nbsp; 月 &nbsp;&nbsp;&nbsp;&nbsp; 日</td>
+          </tr>
+          <tr>
+            <th>審查人員簽章</th>
+            <td style="height: 45px;">&nbsp;</td>
+            <th>業務主管簽章</th>
+            <td>&nbsp;</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  `;
+}
+
+/**
+ * 依《水土保持計畫審核監督辦法》附表五：開工申報書 (法定格式)
+ */
+function generateStatutoryCommencementHTML(d) {
+  return `
+    <div class="print-gov-header">
+      <span class="annex-tag">輔助表單（非主管機關制式表單）</span>
+      <div class="gov-top-line">${d.county}（主管機關）</div>
+      <h2>水土保持工程開工申報書</h2>
+      <div class="law-cite">簡易水土保持申報書核可函得代替施工許可證，並依辦法第二十二條辦理開工申報（請向受理機關確認所需格式）</div>
+    </div>
+
+    <table class="official-table">
+      <tbody>
+        <tr>
+          <th style="width: 22%;">受文主管機關</th>
+          <td colspan="3"><strong>${d.county}</strong>（水土保持科 / 水利工程科）</td>
+        </tr>
+        <tr>
+          <th>計畫工程名稱</th>
+          <td colspan="3"><strong>${d.district}${d.lot} 簡易水土保持申報工程</strong></td>
+        </tr>
+        <tr>
+          <th>原核定公文字號</th>
+          <td>＿＿＿＿字第＿＿＿＿＿＿＿＿ 號</td>
+          <th>原核定日期</th>
+          <td>民國 &nbsp;&nbsp;&nbsp;&nbsp; 年 &nbsp;&nbsp;&nbsp;&nbsp; 月 &nbsp;&nbsp;&nbsp;&nbsp; 日</td>
+        </tr>
+        <tr>
+          <th>水土保持義務人</th>
+          <td><strong>${d.applicant}</strong></td>
+          <th>身分證字號</th>
+          <td>${d.idNo}</td>
+        </tr>
+        <tr>
+          <th>實施地點標的</th>
+          <td colspan="3">${d.district}${d.lot}</td>
+        </tr>
+        <tr>
+          <th>預定開工日期</th>
+          <td><strong>民國 ${d.startDate}</strong></td>
+          <th>預定完工日期</th>
+          <td><strong>民國 ${d.endDate}</strong></td>
+        </tr>
+        <tr>
+          <th>工程承造廠商 / 施作人</th>
+          <td>水土保持義務人自工 / 委託營造廠商</td>
+          <th>聯絡電話</th>
+          <td>${d.phone}</td>
+        </tr>
+        <tr>
+          <th>施工方式</th>
+          <td colspan="3">
+            □ 水土保持義務人自行施工　　□ 委託廠商施工（廠商名稱：＿＿＿＿＿＿＿＿）
+          </td>
+        </tr>
+        <tr>
+          <th>檢附開工證明文件</th>
+          <td colspan="3" style="font-size: 0.88rem;">
+            □ 1. 原核定簡易水土保持申報書核可函影本<br>
+            □ 2. 開工前基地現場照片<br>
+            □ 3. 臨時防災措施（如臨時沉砂、截水）設置照片
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="official-declaration-text">
+      <strong>具結聲明：</strong> 本水土保持義務人謹依規定申報開工，施工期間恪遵核定圖說、水土保持法及相關技術規範，按期填報自主檢查紀錄；若未經核准擅自變更設計或造成鄰地土石流失，願依法負責。
+    </div>
+
+    <div class="official-signatures-grid">
+      <div class="official-sig-box">
+        <div class="official-sig-title">水土保持義務人 簽名蓋章</div>
+        <div style="text-align: center; color: #555; margin: 1.5rem 0;">（簽章）</div>
+        <div style="text-align: right; font-size: 0.82rem;">申報日期：民國 &nbsp;&nbsp;&nbsp;&nbsp; 年 &nbsp;&nbsp;&nbsp;&nbsp; 月 &nbsp;&nbsp;&nbsp;&nbsp; 日</div>
+      </div>
+      <div class="official-sig-box">
+        <div class="official-sig-title">主管機關 開工備查核章欄</div>
+        <div style="font-size: 0.85rem; color: #555; line-height: 1.8;">
+          備查文號：<br>
+          備查日期：民國 &nbsp;&nbsp;&nbsp;&nbsp; 年 &nbsp;&nbsp;&nbsp;&nbsp; 月 &nbsp;&nbsp;&nbsp;&nbsp; 日<br>
+          審查人員核章：
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+/**
+ * 依《水土保持計畫審核監督辦法》附表七：完工申報書 (法定格式)
+ */
+function generateStatutoryCompletionHTML(d) {
+  return `
+    <div class="print-gov-header">
+      <span class="annex-tag">參考版式：農村水保署公布「簡易水土保持處理完工申報書」（官網表單 027）</span>
+      <div class="gov-top-line">${d.county}（主管機關）</div>
+      <h2>簡易水土保持處理完工申報書</h2>
+      <div class="law-cite">依水土保持計畫審核監督辦法完工申報規定辦理（正式送件請改用主管機關最新公布表單）</div>
+    </div>
+
+    <table class="official-table">
+      <tbody>
+        <tr>
+          <th style="width: 22%;">受文主管機關</th>
+          <td colspan="3"><strong>${d.county}</strong>（水土保持科 / 水利工程科）</td>
+        </tr>
+        <tr>
+          <th>計畫工程名稱</th>
+          <td colspan="3"><strong>${d.district}${d.lot} 簡易水土保持申報工程</strong></td>
+        </tr>
+        <tr>
+          <th>原核可函字號</th>
+          <td>＿＿＿＿字第＿＿＿＿＿＿＿＿ 號</td>
+          <th>實際開工日期</th>
+          <td>民國 ＿＿ 年 ＿＿ 月 ＿＿ 日</td>
+        </tr>
+        <tr>
+          <th>水土保持義務人</th>
+          <td><strong>${d.applicant}</strong></td>
+          <th>身分證字號</th>
+          <td>${d.idNo}</td>
+        </tr>
+        <tr>
+          <th>工程實施地點</th>
+          <td colspan="3">${d.district}${d.lot}</td>
+        </tr>
+        <tr>
+          <th>核定完工日期</th>
+          <td><strong>民國 ${d.endDate}</strong></td>
+          <th>預估施工天數</th>
+          <td>${d.spanDays != null && d.spanDays >= 0 ? '約 ' + d.spanDays + ' 日（依預定開、完工日計算）' : '＿＿＿ 日'}</td>
+        </tr>
+        <tr>
+          <th>水土保持設施竣工對照清冊</th>
+          <td colspan="3">
+            <table class="official-table" style="margin: 0.5rem 0; font-size: 0.85rem;">
+              <tr class="sub-th">
+                <th>設施項目</th><th>原核定數量規格</th><th>實際竣工數量規格</th><th>竣工查驗結果</th>
+              </tr>
+              <tr><td>排水設施</td><td>${d.facDrain}</td><td>＿＿＿＿＿＿＿＿</td><td class="center">□ 相符　□ 不符</td></tr>
+              <tr><td>沉砂／滯洪設施</td><td>${d.facSediment}</td><td>＿＿＿＿＿＿＿＿</td><td class="center">□ 相符　□ 不符</td></tr>
+              <tr><td>擋土／邊坡結構</td><td>${d.facWall}</td><td>＿＿＿＿＿＿＿＿</td><td class="center">□ 相符　□ 不符</td></tr>
+              <tr><td>植生敷蓋</td><td>${d.facCover}</td><td>＿＿＿＿＿＿＿＿</td><td class="center">□ 相符　□ 不符</td></tr>
+            </table>
+          </td>
+        </tr>
+        <tr>
+          <th>檢附完工證明書件</th>
+          <td colspan="3" style="font-size: 0.88rem;">
+            □ 1. 竣工照片及相關書圖文件（依實際施作設施拍攝）<br>
+            □ 2. 其他主管機關要求之文件<br>
+            ※ 完工後由主管機關依規定查驗、核發「水土保持完工證明書」（官網表單 026）。
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="official-declaration-text">
+      <strong>具結保證：</strong> 本水土保持義務人茲申報工程已全數完工，確依原核定簡易水土保持申報書內容施工完竣，謹請 主管機關辦理完工查驗及後續程序。
+    </div>
+
+    <div class="official-signatures-grid">
+      <div class="official-sig-box">
+        <div class="official-sig-title">水土保持義務人 簽名蓋章</div>
+        <div style="text-align: center; color: #555; margin: 1.5rem 0;">（簽章）</div>
+        <div style="text-align: right; font-size: 0.82rem;">申報完工日期：民國 &nbsp;&nbsp;&nbsp;&nbsp; 年 &nbsp;&nbsp;&nbsp;&nbsp; 月 &nbsp;&nbsp;&nbsp;&nbsp; 日</div>
+      </div>
+      <div class="official-sig-box">
+        <div class="official-sig-title">主管機關 現地查驗與核定欄</div>
+        <div style="font-size: 0.85rem; color: #555; line-height: 1.8;">
+          會勘查驗日期：民國 &nbsp;&nbsp;&nbsp;&nbsp; 年 &nbsp;&nbsp;&nbsp;&nbsp; 月 &nbsp;&nbsp;&nbsp;&nbsp; 日<br>
+          查驗結果：□合格准予發證 ｜ □限期改善<br>
+          完工證明書字號：
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+/**
+ * 水土保持設施施工中自主檢查紀錄表
+ */
+function generateStatutoryChecklistHTML(d) {
+  return `
+    <div class="print-gov-header">
+      <span class="annex-tag">輔助表單（官方「設施自主檢查表」034 適用於水土保持計畫）</span>
+      <div class="gov-top-line">${d.district}${d.lot} 簡易水土保持工程</div>
+      <h2>水土保持處理與維護設施自主檢查紀錄表</h2>
+      <div class="law-cite">義務人自主巡查參考紀錄，請依現場實際情形逐項勾選</div>
+    </div>
+
+    <table class="official-table">
+      <thead>
+        <tr class="sub-th">
+          <th style="width: 8%;">項次</th>
+          <th style="width: 32%;">自主檢查檢查項目</th>
+          <th style="width: 42%;">技術規範檢查重點與標準</th>
+          <th style="width: 18%;">檢查結果</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="center">1</td>
+          <td><strong>截排水溝暢通度</strong></td>
+          <td>溝內無雜物阻塞，縱坡順暢，出水口銜接天然水路無沖蝕。</td>
+          <td class="center">□ 正常　□ 需改善</td>
+        </tr>
+        <tr>
+          <td class="center">2</td>
+          <td><strong>臨時沉砂池清淤</strong></td>
+          <td>沉砂量未達容量二分之一，溢流井防溢網完好無破損。</td>
+          <td class="center">□ 正常　□ 需改善</td>
+        </tr>
+        <tr>
+          <td class="center">3</td>
+          <td><strong>擋土護坡結構安全</strong></td>
+          <td>石籠擋土牆無位移傾斜，洩水孔通暢無土石崩坍跡象。</td>
+          <td class="center">□ 正常　□ 需改善</td>
+        </tr>
+        <tr>
+          <td class="center">4</td>
+          <td><strong>邊坡植生覆蓋生長</strong></td>
+          <td>裸露面草皮覆蓋生長均勻，無大面積土壤裸露淘刷現象。</td>
+          <td class="center">□ 正常　□ 需改善</td>
+        </tr>
+        <tr>
+          <td class="center">5</td>
+          <td><strong>工區周界防砂安全</strong></td>
+          <td>工區周界設有臨時阻砂編柵，無泥水外溢污染下游農地。</td>
+          <td class="center">□ 正常　□ 需改善</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div style="font-size: 0.88rem; margin-top: 1.5rem; text-align: right;">
+      水土保持義務人自主檢查簽章：____________________ &nbsp;&nbsp;&nbsp;&nbsp; 檢查日期：民國 &nbsp;&nbsp;&nbsp;&nbsp; 年 &nbsp;&nbsp;&nbsp;&nbsp; 月 &nbsp;&nbsp;&nbsp;&nbsp; 日
+    </div>
+  `;
+}
+
+/**
+ * 一鍵整併列印全套法定送審卷宗 (Cover + 申報書 + 自主檢查 + 封底)
+ */
+function generateCompleteDossierHTML(d) {
+  return `
+    <!-- 第一頁：簡易水土保持申報書 -->
+    ${generateStatutoryDeclarationHTML(d)}
+    
+    <div class="doc-page-break"></div>
+
+    <!-- 第二頁：自主檢查紀錄表 -->
+    ${generateStatutoryChecklistHTML(d)}
+
+    <div class="doc-page-break"></div>
+
+    <!-- 第三頁：開工申報書 (輔助) -->
+    ${generateStatutoryCommencementHTML(d)}
+  `;
+}
+
+function printAllStatutoryDossier() {
+  switchStatutoryDoc('dossier');
+  setTimeout(() => {
+    window.print();
+  }, 400);
+}
+
+function triggerPrint() {
+  syncDataToPrintDossier();
+  window.print();
+}
+
+function exportDataJSON() {
+  const d = getFormData();
+  const jsonStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(d, null, 2));
+  const a = document.createElement('a');
+  a.href = jsonStr;
+  a.download = `水土保持申報法定書表_${d.applicant}_${d.lot}.json`;
+  a.click();
+  showToast('已匯出 JSON。檔內含身分證字號等個資，請妥善保管、勿轉傳。', 'warning');
+}
+
+function loadDemoData() {
+  const domain = APP_STATE.currentDomain;
+  const set = (id, val) => { const el = document.getElementById(id); if (el) el.value = val; };
+  if (domain === 'soil_care') {
+    set('applicantName', '王小明（示範）');
+    set('applicantId', 'A123456789');
+    set('applicantPhone', '0900-000000');
+    set('applicantAddress', '示範縣示範鄉示範路 1 號');
+    set('landDistrict', '示範鄉');
+    set('landLotNo', '示範段 0000-0000 地號');
+    set('inHillside', 'yes');
+    set('projectType', 'land_improvement');
+    set('excavationArea', '1200');
+    set('earthCut', '900');
+    set('earthFill', '700');
+  }
+  evaluateRegulations();
+  syncDataToPrintDossier();
+  showToast('已載入虛構示範資料（非真實個資與地號）。', 'info');
+}
+
+// ==========================================
+// 9. Expert Marketplace Engine
+// ==========================================
+
+function renderExpertsList() {
+  const container = document.getElementById('expertCardsContainer');
+  if (!container) return;
+
+  const roleFilter = document.getElementById('filterRole')?.value || 'all';
+  const countyFilter = document.getElementById('filterCounty')?.value || 'all';
+  const domain = APP_STATE.currentDomain;
+
+  let list = EXPERTS_DB.filter(exp => {
+    if (exp.domains && !exp.domains.includes(domain)) return false;
+    if (roleFilter !== 'all' && exp.role !== roleFilter) return false;
+    if (countyFilter !== 'all' && !exp.serviceCounties.includes(countyFilter) && exp.county !== countyFilter) return false;
+    return true;
+  });
+
+  container.innerHTML = list.map(exp => `
+    <div class="expert-card">
+      <div class="expert-card-badge">
+        <span class="badge badge-green">
+          <i data-lucide="badge-check"></i> ${exp.title}
+        </span>
+      </div>
+
+      <div class="expert-header">
+        <div class="expert-avatar">${exp.name.charAt(0)}</div>
+        <div class="expert-info">
+          <h3>${exp.name}</h3>
+          <div class="expert-license">${exp.firm}</div>
+          <div style="font-size: 0.8rem; color: #D97706; margin-top: 0.2rem;">
+            ★ ${exp.rating.toFixed(1)}（示範資料）
+          </div>
+        </div>
+      </div>
+
+      <div class="expert-tags">
+        ${exp.tags.map(t => `<span class="expert-tag-item"># ${t}</span>`).join('')}
+      </div>
+
+      <div class="expert-price-quote">
+        <span>報價參考：</span>
+        <span class="price-val">${exp.priceRange}</span>
+      </div>
+
+      <div class="expert-card-actions">
+        <button class="btn btn-secondary btn-sm" onclick="viewExpertDetail('${exp.id}')">
+          <i data-lucide="user"></i> 完整履歷
+        </button>
+        <button class="btn btn-primary btn-sm" onclick="startCommissionForExpert('${exp.id}')">
+          <i data-lucide="shield-check"></i> 履約託管
+        </button>
+      </div>
+    </div>
+  `).join('');
+
+  if (window.lucide) lucide.createIcons();
+}
+
+function viewExpertDetail(expId) {
+  const exp = EXPERTS_DB.find(e => e.id === expId);
+  if (!exp) return;
+
+  document.getElementById('modalExpertName').innerHTML = `${exp.name} (${exp.title})`;
+  document.getElementById('modalExpertBody').innerHTML = `
+    <div style="margin-bottom: 1rem;">
+      <h4>${exp.firm}</h4>
+      <p style="color: var(--text-muted); font-size: 0.85rem;">證號：${exp.licenseNo}（虛構示範資料）</p>
+    </div>
+    <div style="background: var(--surface-subtle); padding: 1rem; border-radius: var(--radius-md); margin-bottom: 1rem; font-size: 0.88rem; line-height: 1.6;">
+      ${exp.bio}
+    </div>
+    <div style="font-size: 0.85rem; color: var(--text-muted);">
+      <strong>常駐服務區域：</strong> ${exp.serviceCounties.join('、')}<br>
+      <strong>履約款項（示範流程）：</strong> 擬採信託專戶／履約保證機制託管，取得主管機關核准文件後，依委託契約撥款並扣除平台服務費。實際上線須與合法金融機構合作。
+    </div>
+  `;
+
+  document.getElementById('btnModalHire').onclick = () => {
+    closeModal('expertModalBackdrop');
+    startCommissionForExpert(exp.id);
+  };
+
+  openModal('expertModalBackdrop');
+  if (window.lucide) lucide.createIcons();
+}
+
+// ==========================================
+// 10. Commercial Escrow & Commission System
+// ==========================================
+
+function renderEscrowOrders() {
+  const container = document.getElementById('escrowOrdersContainer');
+  if (!container) return;
+
+  container.innerHTML = ESCROW_ORDERS.map(order => `
+    <div class="order-card">
+      <div>
+        <h4 style="font-weight: 800; font-size: 1.05rem; margin-bottom: 0.25rem;">
+          <i data-lucide="file-badge" style="color: var(--primary);"></i> ${order.caseTitle}
+        </h4>
+        <p style="font-size: 0.82rem; color: var(--text-muted);">
+          受託專家：<strong>${order.expertName}</strong> (${order.expertRole})<br>
+          委託項目：${order.serviceName}
+        </p>
+      </div>
+
+      <div style="background: var(--surface-subtle); padding: 0.85rem; border-radius: var(--radius-md); font-size: 0.82rem;">
+        <div style="display: flex; justify-content: space-between; margin-bottom: 0.2rem;">
+          <span>委託總金額：</span>
+          <strong>NT$ ${order.totalAmount.toLocaleString()}</strong>
+        </div>
+        <div style="display: flex; justify-content: space-between; color: #B45309; margin-bottom: 0.2rem;">
+          <span>平台媒合服務費 (8%)：</span>
+          <span>- NT$ ${order.platformFee.toLocaleString()}</span>
+        </div>
+        <div style="display: flex; justify-content: space-between; color: #047857; font-weight: 800;">
+          <span>專家過件實收 (92%)：</span>
+          <span>NT$ ${order.expertNet.toLocaleString()}</span>
+        </div>
+      </div>
+
+      <div>
+        <div style="font-size: 0.85rem; font-weight: 700; margin-bottom: 0.2rem;">
+          審查進度 (階段 ${order.stepNumber}/5)
+        </div>
+        <div style="font-size: 0.78rem; color: var(--text-muted);">
+          ${order.stepDesc}
+        </div>
+        ${order.govDocNo ? `<div style="font-size: 0.75rem; color: #047857; font-weight: bold; margin-top: 0.25rem;">官方公文號：${order.govDocNo}</div>` : ''}
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 0.4rem;">
+        ${order.status === 'LOCKED' ? `
+          <button class="btn btn-secondary btn-sm" onclick="simulateOrderApproval('${order.id}')">
+            <i data-lucide="file-check"></i> 模擬取得官方公文
+          </button>
+        ` : ''}
+        ${order.status === 'GOV_APPROVED' ? `
+          <button class="btn btn-accent btn-sm" onclick="releaseEscrowPayment('${order.id}')">
+            <i data-lucide="unlock"></i> 扣除抽成・確認撥款
+          </button>
+        ` : ''}
+        ${order.status === 'RELEASED' ? `
+          <button class="btn btn-outline-emerald btn-sm" onclick="switchTab('reviews')">
+            <i data-lucide="star"></i> 查看/給予認證評價
+          </button>
+        ` : ''}
+      </div>
+    </div>
+  `).join('');
+
+  updatePlatformOperatorStats();
+  if (window.lucide) lucide.createIcons();
+}
+
+function updatePlatformOperatorStats() {
+  let gmv = 0;
+  let revenue = 0;
+  let escrowHold = 0;
+
+  ESCROW_ORDERS.forEach(o => {
+    gmv += o.totalAmount;
+    if (o.status === 'RELEASED') {
+      revenue += o.platformFee;
+    } else {
+      escrowHold += o.totalAmount;
+    }
+  });
+
+  const elGmv = document.getElementById('statGMV');
+  const elRev = document.getElementById('statRevenue');
+  const elHold = document.getElementById('statEscrowHold');
+
+  if (elGmv) elGmv.innerText = `NT$ ${gmv.toLocaleString()}`;
+  if (elRev) elRev.innerText = `NT$ ${revenue.toLocaleString()}`;
+  if (elHold) elHold.innerText = `NT$ ${escrowHold.toLocaleString()}`;
+}
+
+function simulateOrderApproval(orderId) {
+  const order = ESCROW_ORDERS.find(o => o.id === orderId);
+  if (!order) return;
+
+  const sampleDoc = order.domain === 'building_permit' 
+    ? `(113)投都建字第 0${Math.floor(1000 + Math.random() * 9000)} 號`
+    : `投府農水字第 11300${Math.floor(10000 + Math.random() * 90000)} 號`;
+
+  order.status = 'GOV_APPROVED';
+  order.statusText = '主管機關審查核准！待撥款';
+  order.stepNumber = 4;
+  order.stepDesc = `主管機關已審查核准，核發正式公文函號：${sampleDoc}。`;
+  order.govDocNo = sampleDoc;
+
+  renderEscrowOrders();
+  updateReviewCaseOptions();
+  showToast(`已取得官方審查核准公文！文號：${sampleDoc}`, 'success');
+}
+
+function releaseEscrowPayment(orderId) {
+  const order = ESCROW_ORDERS.find(o => o.id === orderId);
+  if (!order) return;
+
+  order.status = 'RELEASED';
+  order.statusText = '已驗收撥款結案（示範）';
+  order.stepNumber = 5;
+  order.stepDesc = `委託人已確認驗收。扣除平台 8% 服務費 (NT$ ${order.platformFee.toLocaleString()})，淨額 NT$ ${order.expertNet.toLocaleString()} 已正式撥付專家！已開立電子發票。`;
+
+  renderEscrowOrders();
+  updateReviewCaseOptions();
+  showToast(`款項結算完成！平台服務費 NT$ ${order.platformFee.toLocaleString()} 已入帳，淨額 NT$ ${order.expertNet.toLocaleString()} 已撥付給 ${order.expertName} 專家！`, 'success');
+
+  setTimeout(() => {
+    switchTab('reviews');
+    checkReviewUnlockState();
+  }, 1000);
+}
+
+function startCommissionForExpert(expId) {
+  populateCommissionModal(expId);
+  openModal('commissionModalBackdrop');
+}
+
+function openCommissionModalWithCurrentData() {
+  populateCommissionModal();
+  const applicant = document.getElementById('applicantName')?.value || '申請人';
+  const county = document.getElementById('landCounty')?.value || '南投縣';
+  const lot = document.getElementById('landLotNo')?.value || '';
+  const domain = DOMAIN_REGISTRY[APP_STATE.currentDomain].name;
+
+  document.getElementById('commNotes').value = `${county}${lot}，委託承辦【${domain}】審查與圖說繪製，申請人：${applicant}。款項採平台履約專戶託管。`;
+  openModal('commissionModalBackdrop');
+}
+
+function populateCommissionModal(selectedExpId) {
+  const select = document.getElementById('commExpertSelect');
+  const serviceSelect = document.getElementById('commServiceType');
+  const domain = APP_STATE.currentDomain;
+  const cfg = DOMAIN_REGISTRY[domain];
+
+  const availableExperts = EXPERTS_DB.filter(e => !e.domains || e.domains.includes(domain));
+  select.innerHTML = availableExperts.map(e => `
+    <option value="${e.id}" ${e.id === selectedExpId ? 'selected' : ''}>${e.name} (${e.title} - ${e.firm})</option>
+  `).join('');
+
+  serviceSelect.innerHTML = cfg.services.map(s => `<option value="${s}">${s}</option>`).join('');
+  updateCommissionBreakdownPreview();
+}
+
+function updateCommissionBreakdownPreview() {
+  const total = parseFloat(document.getElementById('commAmount').value) || 0;
+  const fee = Math.round(total * COMMISSION_RATE);
+  const net = total - fee;
+
+  document.getElementById('commPreviewTotal').innerText = `NT$ ${total.toLocaleString()}`;
+  document.getElementById('commPreviewFee').innerText = `- NT$ ${fee.toLocaleString()}`;
+  document.getElementById('commPreviewNet').innerText = `NT$ ${net.toLocaleString()}`;
+}
+
+function confirmCreateCommission() {
+  const expSelect = document.getElementById('commExpertSelect');
+  const exp = EXPERTS_DB.find(e => e.id === expSelect.value);
+  const service = document.getElementById('commServiceType').value;
+  const total = parseFloat(document.getElementById('commAmount').value) || 25000;
+  const fee = Math.round(total * COMMISSION_RATE);
+  const net = total - fee;
+  const notes = document.getElementById('commNotes').value;
+
+  const newOrder = {
+    id: `case-${Date.now()}`,
+    domain: APP_STATE.currentDomain,
+    caseTitle: esc(notes.substring(0, 30)) + (notes.length > 30 ? '…' : '') || '（未填需求）',
+    expertName: exp ? exp.name : '委託專家',
+    expertRole: exp ? exp.title : '專業執業人員',
+    serviceName: service,
+    totalAmount: total,
+    platformFee: fee,
+    expertNet: net,
+    status: 'LOCKED',
+    statusText: '款項已安全託管 (專戶凍結中)',
+    stepNumber: 2,
+    stepDesc: '委託人款項已安全凍結於專戶，專家已接單進行現勘測量',
+    govDocNo: null,
+    date: new Date().toISOString().split('T')[0]
+  };
+
+  ESCROW_ORDERS.unshift(newOrder);
+  closeModal('commissionModalBackdrop');
+  renderEscrowOrders();
+  updateReviewCaseOptions();
+
+  showToast(`（示範）委託成立！NT$ ${total.toLocaleString()} 為模擬存入，未發生真實金流。`, 'info');
+  switchTab('escrow');
+}
+
+// ==========================================
+// 11. Verified Reviews & Anti-Fraud Center
+// ==========================================
+
+function updateReviewCaseOptions() {
+  const select = document.getElementById('reviewCaseSelect');
+  if (!select) return;
+
+  select.innerHTML = ESCROW_ORDERS.map(o => {
+    const isApproved = (o.status === 'GOV_APPROVED' || o.status === 'RELEASED');
+    return `<option value="${o.id}">${o.caseTitle} (${o.expertName}) - ${isApproved ? '【已取得核准文件（示範）】' : '【審查中・未核准】'}</option>`;
+  }).join('');
+
+  checkReviewUnlockState();
+}
+
+function checkReviewUnlockState() {
+  const select = document.getElementById('reviewCaseSelect');
+  const order = ESCROW_ORDERS.find(o => o.id === select?.value);
+
+  const lockNotice = document.getElementById('reviewLockNotice');
+  const badge = document.getElementById('composerStatusBadge');
+  const btn = document.getElementById('btnSubmitReview');
+  const docInput = document.getElementById('reviewGovDocNo');
+
+  if (!order || (order.status !== 'GOV_APPROVED' && order.status !== 'RELEASED')) {
+    if (lockNotice) lockNotice.style.display = 'flex';
+    if (badge) {
+      badge.className = 'badge badge-amber';
+      badge.innerHTML = '<i data-lucide="lock"></i> 案件未獲官方公文前鎖定';
+    }
+    if (btn) btn.disabled = true;
+    if (docInput) docInput.value = '';
+  } else {
+    if (lockNotice) lockNotice.style.display = 'none';
+    if (badge) {
+      badge.className = 'badge badge-green';
+      badge.innerHTML = '<i data-lucide="check-circle-2"></i> 已取得核准文件（示範）・解鎖評價';
+    }
+    if (btn) btn.disabled = false;
+    if (docInput && order.govDocNo) docInput.value = order.govDocNo;
+  }
+  if (window.lucide) lucide.createIcons();
+}
+
+function simulateDocApprovalUnlock() {
+  const select = document.getElementById('reviewCaseSelect');
+  const order = ESCROW_ORDERS.find(o => o.id === select?.value);
+  if (order) {
+    order.status = 'GOV_APPROVED';
+    order.govDocNo = `投府農水字第 11300${Math.floor(10000 + Math.random() * 90000)} 號`;
+  }
+  updateReviewCaseOptions();
+  checkReviewUnlockState();
+  showToast('（示範）已模擬取得核准文件，評價已解鎖。', 'info');
+}
+
+function submitVerifiedReview() {
+  const select = document.getElementById('reviewCaseSelect');
+  const order = ESCROW_ORDERS.find(o => o.id === select.value);
+  const docNo = document.getElementById('reviewGovDocNo').value.trim();
+  const rating = parseFloat(document.getElementById('reviewTotalRating').value);
+  const comment = document.getElementById('reviewCommentText').value.trim();
+
+  if (!docNo) {
+    showToast('防刷評要求：請務必輸入官方主管機關核准公文函號或執照字號！', 'warning');
+    return;
+  }
+  if (!comment) {
+    showToast('請填寫實際委託心得評語', 'warning');
+    return;
+  }
+
+  const newRev = {
+    id: `rev-${Date.now()}`,
+    domain: order ? order.domain : APP_STATE.currentDomain,
+    author: '委託業主（示範）',
+    expertName: order ? `${order.expertName} ${order.expertRole}` : '執業專家',
+    rating: rating,
+    govDocNo: esc(docNo),
+    docType: '使用者自填公文字號（示範版未實際查證）',
+    date: new Date().toISOString().split('T')[0],
+    content: esc(comment)
+  };
+
+  VERIFIED_REVIEWS.unshift(newRev);
+  renderVerifiedReviews();
+  document.getElementById('reviewCommentText').value = '';
+  showToast('（示範）評價已加入評價牆。正式版須實際查證公文後才可標示認證。', 'info');
+}
+
+function renderVerifiedReviews() {
+  const wall = document.getElementById('verifiedReviewsWall');
+  if (!wall) return;
+
+  wall.innerHTML = VERIFIED_REVIEWS.map(rev => `
+    <div class="review-bubble">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+        <div>
+          <strong>${rev.author}</strong>
+          <div style="font-size: 0.78rem; color: var(--text-muted);">受託：${rev.expertName}</div>
+        </div>
+        <div style="color: #F59E0B; font-weight: 700;">★ ${rev.rating.toFixed(1)}</div>
+      </div>
+      <div>
+        <span class="verified-gov-tag">
+          <i data-lucide="shield-check"></i> 主管機關官方核准認證
+        </span>
+      </div>
+      <div style="font-size: 0.88rem; color: var(--text-muted); line-height: 1.6; margin: 0.75rem 0;">
+        "${rev.content}"
+      </div>
+      <div style="font-family: monospace; font-size: 0.75rem; color: #64748B; background: #F1F5F9; padding: 0.25rem 0.5rem; border-radius: 4px; margin-top: auto;">
+        公文函號：${rev.govDocNo} | ${rev.date}
+      </div>
+    </div>
+  `).join('');
+
+  if (window.lucide) lucide.createIcons();
+}
+
+// ==========================================
+// 12. Utilities & Modals
+// ==========================================
+
+function openModal(id) {
+  const el = document.getElementById(id);
+  if (el) el.classList.add('open');
+}
+
+function closeModal(id) {
+  const el = document.getElementById(id);
+  if (el) el.classList.remove('open');
+}
+
+function openPartnerJoinModal() {
+  showToast('（示範）加盟功能尚未開放。正式上線後將提供申請表單與執照審核。', 'info');
+}
+
+function simulateFileUpload(id) {
+  showToast('（示範）此版本不會實際上傳或儲存檔案。', 'info');
+}
+
+function toggleTheme() {
+  const isDark = document.body.getAttribute('data-theme') === 'dark';
+  document.body.setAttribute('data-theme', isDark ? 'light' : 'dark');
+  document.getElementById('themeToggleBtn').innerHTML = isDark ? '<i data-lucide="moon"></i>' : '<i data-lucide="sun"></i>';
+  if (window.lucide) lucide.createIcons();
+}
+
+function showToast(message, type = 'info') {
+  const container = document.getElementById('toastContainer');
+  if (!container) return;
+
+  const toast = document.createElement('div');
+  toast.style.padding = '0.75rem 1.25rem';
+  toast.style.borderRadius = '8px';
+  toast.style.color = 'white';
+  toast.style.fontWeight = '600';
+  toast.style.fontSize = '0.9rem';
+  toast.style.boxShadow = '0 10px 15px -3px rgba(0,0,0,0.2)';
+  toast.style.display = 'flex';
+  toast.style.alignItems = 'center';
+  toast.style.gap = '0.5rem';
+  toast.style.transition = 'all 0.3s ease';
+
+  if (type === 'success') {
+    toast.style.background = 'linear-gradient(135deg, #059669, #10B981)';
+  } else if (type === 'warning') {
+    toast.style.background = 'linear-gradient(135deg, #D97706, #F59E0B)';
+  } else {
+    toast.style.background = 'linear-gradient(135deg, #2563EB, #3B82F6)';
+  }
+
+  toast.innerHTML = `<span>${message}</span>`;
+  container.appendChild(toast);
+
+  setTimeout(() => {
+    toast.style.opacity = '0';
+    toast.style.transform = 'translateY(10px)';
+    setTimeout(() => toast.remove(), 300);
+  }, 4000);
+}
+
+  </script>
+</body>
+</html>
